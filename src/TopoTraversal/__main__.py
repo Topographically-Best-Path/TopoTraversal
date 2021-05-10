@@ -1,5 +1,5 @@
-import TopoTraversal.gui as gui
-import TopoTraversal.data as data
+import gui
+import data
 
 def main():
     data.write_data("Hello")

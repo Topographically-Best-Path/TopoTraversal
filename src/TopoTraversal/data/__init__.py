@@ -1,4 +1,6 @@
-import TopoTraversal.constants as constants
+import sys
+sys.path.insert(1, '../src/TopoTraversal')
+import constants
 import os
 
 def write_data(to_write:str) -> None:
