@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from requests_html import HTMLSession
 from urllib.parse import urljoin
 import os
+import math
 
 # PARAMETERS: none
 # RETURN VALUE: none
@@ -61,7 +62,7 @@ def get_scale(dy,dx):
     horizontal = 40070 * ((2*dx)/360) / 1000 * 1000
 
     # creating diagonal distance from pythagorean theorem
-    diagonal = Math.sqrt(vertical*vertical + horizontal*horizontal)
+    diagonal = math.sqrt(vertical*vertical + horizontal*horizontal)
 
     # returning calculated values
     return [vertical,horizontal,diagonal]
