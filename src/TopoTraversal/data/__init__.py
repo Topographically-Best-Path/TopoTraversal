@@ -1,122 +1,174 @@
 import TopoTraversal.constants as constants
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.interpolate import griddata
-import matplotlib.colors
-from bs4 import BeautifulSoup
-from requests_html import HTMLSession
-from urllib.parse import urljoin
+import pandas as pd
+import xarray as xr
+import netCDF4
+import pygmt
+import csv
 import os
 
-# PARAMETERS: none
-# RETURN VALUE: none
-# PURPOSE: creates new temporary directory for data and image storage
-def create_temp():
+def create_temp_dir():
+    '''
+    PARAMETERS:   none
+    RETURN VALUE: none
+    REQUIREMENTS: none
+    PURPOSE:      creates new temp directory for data and image storage
+    '''
+
+    # creating temporary directory
     if not os.path.exists(constants.TEMPDIR):
         os.makedirs(constants.TEMPDIR)
 
-# PARAMETERS: 0 <= lo,la <= 360  1 <= dy,dx <= 5, in degrees
-# RETURN VALUE: [x,y,z], each are 1000x1000 np arrays, [degrees,degrees,meters]
-# PURPOSE: generates a uniform 1000x1000 dataset to be later used in image generation and best path creation
-def generate_large_data(lo,la,dy,dx):
-    # generating form responses based on parameters
-    info = {'north' : str(min(lo+dy,360)), 'south' : str(max(lo-dy,0)), 'east' : str(min(la+dx,360)), 'west' : str(max(la-dx,0)), 'mag' : 1}
+def create_image():
+    '''
+    PARAMETERS:   none
+    RETURN VALUE: none
+    REQUIREMENTS: Data.nc has to be created in the temp directory
+    PURPOSE:      creates Image1.png in the temp directory
+    '''
 
-    # starting html session and navigating to website
-    session = HTMLSession()
-    url = urljoin(constants.URL1, "get_data.cgi")
+    # creating temporary directory
+    create_temp_dir()
 
-    # submitting form and obtaining the resulting data
-    res = session.post(url, data=info)
-    soup = str(BeautifulSoup(res.content, "html.parser"))
+    # make color pallets
+    pygmt.makecpt(
+        cmap='topo',
+        series='-10000/10000/500',
+        continuous=True
+    )
 
-    # saving data to temporary directory, temporary directory needs to be made first
-    with open(constants.TEMPDIR / 'Data.txt', 'w') as fout:
-        fout.write(soup)
+    # plotting topography data
+    constants.FIG.grdimage(
+        grid=str(constants.TEMPDIR/'Data.nc'),
+        shading=True,
+        frame=True
+    )
 
-    # loading data from the temporary directory into an np array
-    data = np.loadtxt(constants.TEMPDIR / 'Data.txt')
+    # plotting coastlines
+    constants.FIG.coast(
+        shorelines=True,
+        frame=True
+    )
 
-    # separating combined data into their respective data sets
-    Long,Lat,Elev = data[:,0],data[:,1],data[:,2]
+    # plotting topo contour lines
+    constants.FIG.grdcontour(
+        grid=str(constants.TEMPDIR/'Data.nc'),
+        interval=1000,
+        annotation="1000+f6p",
+        limit="-10000/10000",
+        pen="a0.15p"
+    )
 
-    # finding mininums and maximums of respective datasets
-    minLong,maxLong = np.min(Long),np.max(Long)
-    minLat,maxLat = np.min(Lat),np.max(Lat)
-    minElev,maxElev = np.min(Elev),np.max(Elev)
+    # creating color bar
+    constants.FIG.colorbar(
+        frame='+l" "'
+    )
 
-    # scaling the data into a uniform 1000x1000 np array
-    [x,y] = np.meshgrid(np.linspace(minLong,maxLong,1000),np.linspace(minLat,maxLat,1000))
-    z = griddata((Long, Lat), Elev, (x, y), method='linear')
+    # saving figure as Image.png
+    constants.FIG.savefig(constants.TEMPDIR/"Image1.png", crop=False, dpi=720)
 
-     # returning final data set
-    return [x,y,z]
+def plot_points(points):
+    '''
+    PARAMETERS:   points, [[x1,y1],[x2,y2],...] coordinates of points in the path
+    RETURN VALUE: none
+    REQUIREMENTS: Image2.png has be created in the temp directory
+    PURPOSE:      creates Image3.png with path plotted
+    '''
 
-# PARAMETERS: 0 < dy,dx <= 5, in degrees
-# RETURN VALUE: [v,h,d], floating points numbers, [meters, meters, meters]
-# PURPOSE: finds the distances between two horizontally, vertically, or diagonally separated points, to be later used in the best path algorithm
-def get_scale(dy,dx):
-    # converting distances from degrees to meters
-    vertical = 40070 * ((2*dy)/360) / 1000 * 1000
-    horizontal = 40070 * ((2*dx)/360) / 1000 * 1000
+    # creating temporary directory
+    create_temp_dir()
 
-    # creating diagonal distance from pythagorean theorem
-    diagonal = Math.sqrt(vertical*vertical + horizontal*horizontal)
+    # separating x and y coordinates
+    x = [point[0] for point in points]
+    y = [point[1] for point in points]
 
-    # returning calculated values
-    return [vertical,horizontal,diagonal]
+    # plot data points
+    constants.FIG.plot(
+        x=x,
+        y=y,
+        style='c0.05c',
+        color='white',
+        pen='black',
+    )
 
-# PARAMETERS: x,y,z are 2d ndarrays of the same shape, should be taken from one of the generate data functions above
-# RETURN VALUE: none
-# PURPOSE: creates a topographic image that is saved in the temp directory, to be later displayed to the user
-def generate_image(x,y,z):
-    # class to help smooth out the color map that will be used in the image generation
-    class FixPointNormalize(matplotlib.colors.Normalize):
-        # obtaining data from regular matplotlib normalize library
-        def __init__(self, vmin=None, vmax=None, sealevel=0, col_val = 0.21875, clip=False):
-            self.sealevel = sealevel
-            self.col_val = col_val
-            matplotlib.colors.Normalize.__init__(self, vmin, vmax, clip)
+    # saving figure as Image.png
+    constants.FIG.savefig(constants.TEMPDIR/"Image3.png", crop=False, dpi=720)
 
-        # smoothing out given data and returning it
-        def __call__(self, value, clip=None):
-            x, y = [self.vmin, self.sealevel, self.vmax], [0, self.col_val, 1]
-            return np.ma.masked_array(np.interp(value, x, y))
+def plot_endpoints(start, end):
+    '''
+    PARAMETERS:   start, [x,y] coordinates of starting point
+                  end, [x,y] coordinates of ending point
+    RETURN VALUE: none
+    REQUIREMENTS: Image1.png has be created in the temp directory
+    PURPOSE:      creates Image2.png with endpoints plotted
+    '''
 
-    # obtaining specific color gradients from matplotlib
-    colors_undersea = plt.cm.terrain(np.linspace(0, 0.22, 69))
-    colors_land = plt.cm.terrain(np.linspace(0.25, 1, 228))
+    # creating temporary directory
+    create_temp_dir()
 
-    # combining land and undersea gradients into one gradient
-    colors = np.vstack((colors_undersea, colors_land))
+    # plot data points
+    constants.FIG.plot(
+        x=[start[0],end[0]],
+        y=[start[1],end[1]],
+        style='c0.2c',
+        color='red',
+        pen='black',
+    )
 
-    # creating color map from color gradients
-    cut_terrain_map = matplotlib.colors.LinearSegmentedColormap.from_list('cut_terrain', colors)
+    # saving figure as Image.png
+    constants.FIG.savefig(constants.TEMPDIR/"Image2.png", crop=False, dpi=720)
 
-    # flattening out data into 1d np arrays so they can be graphed
-    x = np.matrix.flatten(x)
-    y = np.matrix.flatten(y)
-    z = np.matrix.flatten(z)
+def get_etopo_data(lon, lat, size):
+    '''
+    PARAMETERS: -180 <= lon <= 180(suggested -175 <= lon <= 175),
+                -89 <= lat <= 89(suggested -85 <= lat <= 85),
+                0.05 <= size <= 90(suggested 0.1 <= size <= 10)
+    RETURN VALUE: none
+    REQUIREMENTS: none
+    PURPOSE: creates Data.nc and Data.csv in the temp directory
+    '''
 
-    # finding mininums and maximums of respective datasets
-    minLong,maxLong = np.min(x),np.max(x)
-    minLat,maxLat = np.min(y),np.max(y)
-    minElev,maxElev = np.min(z),np.max(z)
+    # creating region boundaries
+    minlon, maxlon = max(-180,lon-size), min(180, lon+size) # -180 < lon < 180
+    minlat, maxlat = max(-89,lat-size), min(89,lat+size) # -89 < lat < 89
 
-    # creating figure and removing axes
-    fig,ax = plt.subplots()
-    ax.set_axis_off()
+    # determining which etopo data file to use
+    if (size > 2):
+        topo_data = '@earth_relief_30s' # 30 arc seconds between points
+    elif (size > 0.4):
+        topo_data = '@earth_relief_15s' # 15 arc seconds between points
+    else:
+        topo_data = '@earth_relief_03s' # 03 arc seconds between points
 
-    # creating data that will help normalize the color map
-    norm = FixPointNormalize(sealevel=0,vmax=maxElev,vmin=minElev)
+    # creating temporary directory
+    create_temp_dir()
 
-    # plotting all the datasets into the figure 
-    plt.scatter(x,y,1,z,cmap=cut_terrain_map,norm=norm)
+    # extracting subregion and creating Data.nc file
+    pygmt.grdcut(
+        grid=topo_data,
+        outgrid=constants.TEMPDIR/'Data.nc',
+        projection='M4i',
+        region=[minlon, maxlon, minlat, maxlat]
+    )
 
-    # changing the scale and limits of the figure
-    plt.gca().set_aspect('equal')
-    plt.xlim(minLong,maxLong)
-    plt.ylim(minLat,maxLat)
+    # reading in data from Data.nc
+    nc = xr.open_dataset(constants.TEMPDIR/'Data.nc')
+    lon = nc.variables['x'][:]
+    length = np.size(lon)
+    lat = nc.variables['y'][:]
+    width = np.size(lat)
+    alt = nc.variables['z'][:]
 
-    # saving final figure into the temporary directory
-    plt.savefig(constants.TEMPDIR / "Image.png", bbox_inches='tight', pad_inches=0)
+    # reshaping and flattening data
+    lon = np.tile(lon,width)
+    lat = np.tile(lat,length)
+    lat = np.reshape(lat,(width,length))
+    lat = lat.flatten('F')
+    alt = np.array(alt)
+    alt = alt.flatten()
+
+    # concatenating data together
+    data = np.column_stack((lon,lat,alt))
+
+    # creating Data.csv
+    np.savetxt(constants.TEMPDIR/'Data.csv',data,delimiter=',')
