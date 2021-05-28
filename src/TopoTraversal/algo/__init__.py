@@ -10,6 +10,7 @@ import math
 def read() -> List[List[Tuple[float, float, float]]]:
     """
     Reads points from the file written by the data module into a 2D list.
+
     The way the data is structured from the query, longitude varies before latitude, and comes first in the pair.
     Therefore, in returned read, latitude is measured by row index and longitude is measured by column index.
     Returns:

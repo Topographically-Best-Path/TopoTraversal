@@ -6,6 +6,7 @@ import netCDF4
 import pygmt
 import csv
 import os
+import math
 
 def create_temp_dir():
     '''
