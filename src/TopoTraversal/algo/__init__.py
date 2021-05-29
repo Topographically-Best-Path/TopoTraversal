@@ -11,21 +11,21 @@ def read() -> List[List[Tuple[float, float, float]]]:
     """
     Reads points from the file written by the data module into a 2D list.
 
-    The way the data is structured from the query, longitude varies before latitude, and comes first in the pair. 
+    The way the data is structured from the query, longitude varies before latitude, and comes first in the pair.
     Therefore, in returned read, latitude is measured by row index and longitude is measured by column index.
     Returns:
-    tuple(float, list(list(float, float, float))): 
+    tuple(float, list(list(float, float, float))):
     - the single float is the distance scale between points
     - the 2D list is the heights and places
     """
     points_result = []
     current_lat = None
-    with open(constants.TEMPDIR / "Data.txt") as fin:
+    with open(constants.TEMPDIR / "Data.csv") as fin:
         # Read the data
-        datgen = [[*map(float, line.split())] for line in fin.readlines()]
+        datgen = [[*map(float, line.split(','))] for line in fin.readlines()]
         for dat in datgen:
             if len(dat) == 3:
-                # Add a new row 
+                # Add a new row
                 if current_lat is None or not math.isclose(dat[1], current_lat):
                     points_result.append([])
                     current_lat = dat[1]
@@ -42,7 +42,7 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
     Returns:
     The list of float coordinates
     """
-    
+
     dat:List[List[Tuple[float, float, float]]] = read()
     # Find the indices of the start and end
     start_ind = (-1, -1)
@@ -76,7 +76,7 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
         # Break upon encountering the end; if its in the heap, it must have its dists/prev updated
         if coord == end:
             break
-        
+
         # Check all neighbors
         for delta in dxy:
             nextx = coord[0] + delta[0]
@@ -84,7 +84,7 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
 
             if 0 <= nextx < len(dat) and 0 <= nexty < len(dat[0]): # bounds check
                 if (dat[nextx][nexty][2] - dat[coord[0]][coord[1]][2]) / scale <= threshold: # slope check
-                    if curr_dist + 1 < dists[nextx][nexty]: # dists check 
+                    if curr_dist + 1 < dists[nextx][nexty]: # dists check
                         dists[nextx][nexty] = curr_dist + 1
                         prev[nextx][nexty] = coord
                         heapq.heappush(q, (curr_dist + 1, (nextx, nexty)))
@@ -103,8 +103,5 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
         if math.isclose(ans[0][1], start[0], abs_tol=0.001) and math.isclose(ans[0][0], start[1], abs_tol=0.001):
             print("Success")
         return ans
-    
+
     return []
-
-
-    

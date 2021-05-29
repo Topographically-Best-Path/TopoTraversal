@@ -1,4 +1,5 @@
 from pathlib import Path
+import pygmt
 
 TEMPDIR = Path("temp")
-URL1 = "https://topex.ucsd.edu/cgi-bin/get_data.cgi"
+FIG = pygmt.Figure()
