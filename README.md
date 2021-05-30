@@ -5,10 +5,8 @@
 - Install git, instructions here https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 2) Enter preferred directory and run these commands
 - git clone https://github.com/Topographically-Best-Path/TopoTraversal
-- cd src
-- conda config --prepend channels conda-forge
-- conda create --name pygmt python=3.6 pip numpy pandas xarray packaging gmt=6.1.1
+- cd TopoTraversal/src
+- conda create --name pygmt --channel conda-forge pygmt
 - conda activate pygmt
-- pip install pygmt
 - pip install opensimplex
 - python main.py
