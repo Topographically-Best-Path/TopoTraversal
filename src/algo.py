@@ -1,16 +1,13 @@
-import TopoTraversal.constants as constants
-import TopoTraversal.gui as gui
-import TopoTraversal.data as data
-
 from typing import Tuple
 from typing import List
+import constants
 import heapq
+import data
 import math
 
 def read() -> List[List[Tuple[float, float, float]]]:
     """
     Reads points from the file written by the data module into a 2D list.
-
     The way the data is structured from the query, longitude varies before latitude, and comes first in the pair.
     Therefore, in returned read, latitude is measured by row index and longitude is measured by column index.
     Returns:
@@ -105,3 +102,12 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
         return ans
 
     return []
+
+def main():
+    data.create_temp_dir()
+    data.get_etopo_data(-74,40,3)
+    data.create_image()
+    print(get_path((-76.0, 42.0), (-72.0, 38.0), data.get_scale()[0], 0.25))
+
+if __name__ == "__main__":
+    main()
