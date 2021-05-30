@@ -32,6 +32,9 @@ def create_image():
     # creating temporary directory
     create_temp_dir()
 
+    # resetting figure
+    constants.FIG = pygmt.Figure()
+
     # make color pallets
     pygmt.makecpt(
         cmap='topo',
@@ -43,7 +46,9 @@ def create_image():
     constants.FIG.grdimage(
         grid=str(constants.TEMPDIR/'Data.nc'),
         shading=True,
-        frame=True
+        frame=True,
+        projection='M4i',
+        region=get_bounds()
     )
 
     # plotting coastlines
@@ -84,6 +89,9 @@ def plot_points(points):
     x = [point[0] for point in points]
     y = [point[1] for point in points]
 
+    # resetting image
+    plot_endpoints([x[0],y[0]],[x[-1],y[-1]])
+
     # plot data points
     constants.FIG.plot(
         x=x,
@@ -107,6 +115,9 @@ def plot_endpoints(start, end):
 
     # creating temporary directory
     create_temp_dir()
+
+    # resetting image
+    create_image()
 
     # plot data points
     constants.FIG.plot(
@@ -258,7 +269,6 @@ def get_etopo_data(lon, lat, size):
         topo_data = '@earth_relief_03s' # 03 arc seconds between points
 
     # extracting subregion and creating Data.nc file
-    constants.FIG = pygmt.Figure()
     pygmt.grdcut(
         grid=topo_data,
         outgrid=constants.TEMPDIR/'Data.nc',
@@ -325,7 +335,6 @@ def get_ncfile(path):
     convert_to_csv()
 
     # setting up subregion for image creation
-    constants.FIG = pygmt.Figure()
     pygmt.grdcut(
         grid=str(constants.TEMPDIR/'Data.nc'),
         outgrid=constants.TEMPDIR/'Data.nc',
@@ -354,7 +363,6 @@ def get_csvfile(path):
     convert_to_nc()
 
     # setting up subregion for image creation
-    constants.FIG = pygmt.Figure()
     pygmt.grdcut(
         grid=str(constants.TEMPDIR/'Data.nc'),
         outgrid=constants.TEMPDIR/'Data.nc',
@@ -404,7 +412,6 @@ def create_random_terrain(freq, height, water):
     convert_to_nc()
 
     # setting up subregion for image creation
-    constants.FIG = pygmt.Figure()
     pygmt.grdcut(
         grid=str(constants.TEMPDIR/'Data.nc'),
         outgrid=constants.TEMPDIR/'Data.nc',
@@ -426,7 +433,9 @@ def main():
     get_etopo_data(0,0,3)
     create_image()
     plot_endpoints([0.0,0.0],[2.0,0.0])
-    plot_points([[i/120.0,-(i/120.0 - 1)**2 + 1] for i in range(1,240)])
+    plot_endpoints([-2.0,0.0],[0.0,0.0])
+    plot_points([[i/120.0,-(i/120.0 - 1)**2 + 1] for i in range(0,241)])
+    plot_points([[-i/120.0,-(-i/120.0 + 1)**2 + 1] for i in range(0,241)])
     print(get_bounds())
     print(get_scale())
 
