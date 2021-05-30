@@ -1,8 +1,8 @@
-import TopoTraversal.constants as constants
 from opensimplex import OpenSimplex
 import pandas as pd
 import xarray as xr
 import numpy as np
+import constants
 import netCDF4
 import pygmt
 import math
@@ -411,3 +411,53 @@ def create_random_terrain(freq, height, water):
         projection='M4i',
         region=[-2,2,-2,2]
     )
+
+def main():
+    '''
+    PARAMETERS:   none
+    RETURN VALUE: none
+    REQUIREMENTS: none
+    PURPOSE:      runs all other functions in file at least once, to make sure
+                  they are working. If this errors the data.py will fail
+    '''
+
+    # Test 1: Etopo Data Collection
+    create_temp_dir()
+    get_etopo_data(0,0,3)
+    create_image()
+    plot_endpoints([0.0,0.0],[2.0,0.0])
+    plot_points([[i/120.0,-(i/120.0 - 1)**2 + 1] for i in range(1,240)])
+    print(get_bounds())
+    print(get_scale())
+
+    # Test 2: NC File Data Collection
+    create_temp_dir()
+    get_ncfile('TestData.nc')
+    convert_to_csv()
+    create_image()
+    plot_endpoints([0.0,0.0],[2.0,0.0])
+    plot_points([[i/120.0,-(i/120.0 - 1)**2 + 1] for i in range(1,240)])
+    print(get_bounds())
+    print(get_scale())
+
+    # Test 3: CSV File Data Collection
+    create_temp_dir()
+    get_csvfile('TestData.csv')
+    convert_to_nc()
+    create_image()
+    plot_endpoints([0.0,0.0],[2.0,0.0])
+    plot_points([[i/120.0,-(i/120.0 - 1)**2 + 1] for i in range(1,240)])
+    print(get_bounds())
+    print(get_scale())
+
+    # Test 4: Random Data Generation
+    create_temp_dir()
+    create_random_terrain(15, 4000, 50)
+    create_image()
+    plot_endpoints([0.0,0.0],[2.0,0.0])
+    plot_points([[i/120.0,-(i/120.0 - 1)**2 + 1] for i in range(1,240)])
+    print(get_bounds())
+    print(get_scale())
+
+if __name__ == "__main__":
+    main()
