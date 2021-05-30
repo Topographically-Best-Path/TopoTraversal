@@ -84,11 +84,19 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
 
             if 0 <= nextx < len(dat) and 0 <= nexty < len(dat[0]): # bounds check
                 if (npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) / scale <= threshold: # slope check
-                    if curr_dist + 1 < dists[nextx][nexty]: # dists check
-                        dists[nextx][nexty] = curr_dist + 1
+
+                    newdist = 0
+                    # Add extra cost to moving over water
+                    if npdat[nextx][nexty][2] <= 0:
+                        newdist = curr_dist + 100
+                    else:
+                        newdist = curr_dist + 1
+
+                    if newdist < dists[nextx][nexty]: # dists check
+                        dists[nextx][nexty] = newdist
                         prev[nextx][nexty][0] = coord[0]
                         prev[nextx][nexty][1] = coord[1]
-                        heapq.heappush(q, (curr_dist + 1, (nextx, nexty)))
+                        heapq.heappush(q, (newdist, (nextx, nexty)))
 
     # Reconstruct the path if the end has been reached
     if prev[end_ind[0]][end_ind[1]][0] != -1 and prev[end_ind[0]][end_ind[1]][1] != -1 :
