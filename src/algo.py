@@ -109,6 +109,7 @@ def main():
     data.get_etopo_data(-74,40,3)
     data.create_image()
     pts = get_path((-71.0, 43.0), (-77.0, 43.0), data.get_scale()[0], 0.25)
+    print(pts)
     data.plot_points(pts)
 
 if __name__ == "__main__":
