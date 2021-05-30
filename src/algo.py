@@ -65,7 +65,7 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
     # Start Djikstra
     q:list = []
     heapq.heappush(q, (0, start_ind))
-    dxy = [(-1, 0), (0, 1), (1, 0), (0, -1)] # Constants for checking neighbors
+    dxy = [(-1, 0), (0, 1), (1, 0), (0, -1), (-1, -1), (1, 1), (-1, 1), (1, -1)] # Constants for checking neighbors
     while len(q) > 0:
         # Pop the current minimum total distance from beginning
         try:
