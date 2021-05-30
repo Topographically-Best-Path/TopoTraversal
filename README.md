@@ -6,7 +6,8 @@
 2) Enter preferred directory and run these commands
 - git clone https://github.com/Topographically-Best-Path/TopoTraversal
 - cd TopoTraversal/src
-- conda create --name pygmt --channel conda-forge pygmt
+- conda config --prepend channels conda-forge
+- conda create --name pygmt python=3.9 pip numpy pandas xarray netcdf4 packaging gmt pygmt           
 - conda activate pygmt
 - pip install opensimplex
 - python main.py
