@@ -83,14 +83,14 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
             nexty = coord[1] + delta[1]
 
             if 0 <= nextx < len(dat) and 0 <= nexty < len(dat[0]): # bounds check
-                if (npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) / scale <= threshold: # slope check
+                if math.abs(npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) / scale <= threshold: # slope check
 
                     newdist = 0
-                    # Add extra cost to moving over water
+                    pythag_dist = (npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) ** 2 + scale ** 2
                     if npdat[nextx][nexty][2] <= 0:
-                        newdist = curr_dist + 100
+                        newdist = curr_dist + 100 * pythag_dist # Add extra cost to moving over water
                     else:
-                        newdist = curr_dist + 1
+                        newdist = curr_dist + pythag_dist
 
                     if newdist < dists[nextx][nexty]: # dists check
                         dists[nextx][nexty] = newdist
