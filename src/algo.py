@@ -1,5 +1,6 @@
 from typing import Tuple
 from typing import List
+import numpy as np
 import constants
 import heapq
 import data
@@ -42,21 +43,23 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
 
     dat:List[List[Tuple[float, float, float]]] = read()
     # Find the indices of the start and end
-    start_ind = (-1, -1)
-    end_ind = (-1, -1)
-    for lat_ind, row in enumerate(dat):
-        for long_ind, entry in enumerate(row):
-            # Check that the coordinates match
-            if math.isclose(entry[1], start[0], abs_tol=0.001) and math.isclose(entry[0], start[1], abs_tol=0.001):
-                start_ind = (lat_ind, long_ind)
-            if math.isclose(entry[1], end[0], abs_tol=0.001) and math.isclose(entry[0], end[1], abs_tol=0.001):
-                end_ind = (lat_ind, long_ind)
-    if start_ind == (-1, -1):
-        print("UH OH")
+    npdat = np.array(dat)
+    start_ind = np.unravel_index(
+        np.argmin(
+            (npdat[:,:,0] - start[0]) ** 2 + 
+            (npdat[:,:,1] - start[1]) ** 2
+        ), 
+    npdat[:,:,0].shape)
+    end_ind = np.unravel_index(
+        np.argmin(
+            (npdat[:,:,0] - end[0]) ** 2 + 
+            (npdat[:,:,1] - end[1])** 2
+        ), 
+    npdat[:,:,0].shape)
 
     # Set up the distance and previous traversal matrices for Djikstra
-    dists : List[List[int]] = [[math.inf for _ in dat[0]] for __ in dat]
-    prev : List[List[Tuple[int, int]]] = [[(-1, -1) for _ in dat[0]] for __ in dat]
+    dists = np.full(npdat[:,:,0].shape, np.inf)
+    prev = np.full(npdat[:,:,:2].shape, -1)
     dists[start_ind[0]][start_ind[1]] = 0
 
     # Start Djikstra
@@ -80,25 +83,31 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
             nexty = coord[1] + delta[1]
 
             if 0 <= nextx < len(dat) and 0 <= nexty < len(dat[0]): # bounds check
-                if (dat[nextx][nexty][2] - dat[coord[0]][coord[1]][2]) / scale <= threshold: # slope check
-                    if curr_dist + 1 < dists[nextx][nexty]: # dists check
-                        dists[nextx][nexty] = curr_dist + 1
-                        prev[nextx][nexty] = coord
-                        heapq.heappush(q, (curr_dist + 1, (nextx, nexty)))
+                if (npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) / scale <= threshold: # slope check
+
+                    newdist = 0
+                    # Add extra cost to moving over water
+                    if npdat[nextx][nexty][2] <= 0:
+                        newdist = curr_dist + 100
+                    else:
+                        newdist = curr_dist + 1
+
+                    if newdist < dists[nextx][nexty]: # dists check
+                        dists[nextx][nexty] = newdist
+                        prev[nextx][nexty][0] = coord[0]
+                        prev[nextx][nexty][1] = coord[1]
+                        heapq.heappush(q, (newdist, (nextx, nexty)))
 
     # Reconstruct the path if the end has been reached
-    if prev[end_ind[0]][end_ind[1]] != (-1, -1):
+    if prev[end_ind[0]][end_ind[1]][0] != -1 and prev[end_ind[0]][end_ind[1]][1] != -1 :
         ans:List[Tuple[float, float]] = []
 
         # Starting from the end, add the float coordinates
         curr = end_ind
         while curr != (-1, -1):
-            ans.append(dat[curr[0]][curr[1]][:2])
-            curr = prev[curr[0]][curr[1]]
+            ans.append((npdat[curr[0]][curr[1]][0], npdat[curr[0]][curr[1]][1]))
+            curr = (prev[curr[0]][curr[1]][0], prev[curr[0]][curr[1]][1])
         ans.reverse()
-        # Check that the beginning float coordinates are correct
-        if math.isclose(ans[0][1], start[0], abs_tol=0.001) and math.isclose(ans[0][0], start[1], abs_tol=0.001):
-            print("Success")
         return ans
 
     return []
@@ -107,7 +116,9 @@ def main():
     data.create_temp_dir()
     data.get_etopo_data(-74,40,3)
     data.create_image()
-    print(get_path((-76.0, 42.0), (-72.0, 38.0), data.get_scale()[0], 0.25))
+    pts = get_path((-71.0, 43.0), (-77.0, 43.0), data.get_scale()[0], 0.25)
+    print(pts)
+    data.plot_points(pts)
 
 if __name__ == "__main__":
     main()
