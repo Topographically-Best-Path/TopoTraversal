@@ -1,7 +1,8 @@
 import TopoTraversal.constants as constants
-import numpy as np
+from opensimplex import OpenSimplex
 import pandas as pd
 import xarray as xr
+import numpy as np
 import netCDF4
 import pygmt
 import math
@@ -257,6 +258,7 @@ def get_etopo_data(lon, lat, size):
         topo_data = '@earth_relief_03s' # 03 arc seconds between points
 
     # extracting subregion and creating Data.nc file
+    constants.FIG = pygmt.Figure()
     pygmt.grdcut(
         grid=topo_data,
         outgrid=constants.TEMPDIR/'Data.nc',
@@ -323,6 +325,7 @@ def get_ncfile(path):
     convert_to_csv()
 
     # setting up subregion for image creation
+    constants.FIG = pygmt.Figure()
     pygmt.grdcut(
         grid=str(constants.TEMPDIR/'Data.nc'),
         outgrid=constants.TEMPDIR/'Data.nc',
@@ -351,9 +354,60 @@ def get_csvfile(path):
     convert_to_nc()
 
     # setting up subregion for image creation
+    constants.FIG = pygmt.Figure()
     pygmt.grdcut(
         grid=str(constants.TEMPDIR/'Data.nc'),
         outgrid=constants.TEMPDIR/'Data.nc',
         projection='M4i',
         region=get_bounds()
+    )
+
+def create_random_terrain(freq, height, water):
+    '''
+    PARAMETERS:   freq, 5 <= freq <= 25, controls how mountainy the data will be
+                  height, 100 <= height <= 8000, controls max altitude difference
+                  water, 0 <= water <= 100, percentage of the map that will be under water
+    RETURN VALUE: none
+    REQUIREMENTS: none
+    PURPOSE:      creates Data.nc and Data.csv in the temp directory
+    '''
+
+    # creating temporary directory
+    create_temp_dir()
+
+    # initializing altitude data with noise generator
+    n = 500
+    gens = [OpenSimplex(seed=i) for i in range(10)]
+    alt = np.zeros((n,n))
+    for x in range(n):
+        for y in range(n):
+            for i,gen in enumerate(gens):
+                alt[x][y] += (0.5**i)*(gen.noise2d(freq*(x/n-0.5), freq*(y/n-0.5)) / 2 + (0.5-water/100))
+    alt *= height
+    alt = alt.flatten()
+
+    # creating lon and lat values
+    lon = np.linspace(-2,2,n)
+    lon = np.tile(lon,n)
+    lat = np.linspace(-2,2,n)
+    lat = np.tile(lat,n)
+    lat = np.reshape(lat,(n,n))
+    lat = lat.flatten('F')
+
+    # concatenating data together
+    data = np.column_stack((lon,lat,alt))
+
+    # creating Data.csv
+    np.savetxt(constants.TEMPDIR/'Data.csv',data,delimiter=',')
+
+    # creating Data.nc
+    convert_to_nc()
+
+    # setting up subregion for image creation
+    constants.FIG = pygmt.Figure()
+    pygmt.grdcut(
+        grid=str(constants.TEMPDIR/'Data.nc'),
+        outgrid=constants.TEMPDIR/'Data.nc',
+        projection='M4i',
+        region=[-2,2,-2,2]
     )
