@@ -4,6 +4,7 @@ import xarray as xr
 import numpy as np
 import constants
 import netCDF4
+import random
 import pygmt
 import math
 import csv
@@ -372,7 +373,7 @@ def get_csvfile(path):
 
 def create_random_terrain(freq, height, water):
     '''
-    PARAMETERS:   freq, 5 <= freq <= 25, controls how mountainy the data will be
+    PARAMETERS:   freq, 1 <= freq <= 25, controls how mountainy the data will be
                   height, 100 <= height <= 8000, controls max altitude difference
                   water, 0 <= water <= 100, percentage of the map that will be under water
     RETURN VALUE: none
@@ -383,14 +384,19 @@ def create_random_terrain(freq, height, water):
     # creating temporary directory
     create_temp_dir()
 
-    # initializing altitude data with noise generator
+    # initializing altitude data and creating noise generators
     n = 500
+    rnd = random.randrange(0,1000000)
     gens = [OpenSimplex(seed=i) for i in range(10)]
     alt = np.zeros((n,n))
+
+    # creating noise in altitude data
     for x in range(n):
         for y in range(n):
             for i,gen in enumerate(gens):
-                alt[x][y] += (0.5**i)*(gen.noise2d(freq*(x/n-0.5), freq*(y/n-0.5)) / 2 + (0.5-water/100))
+                alt[x][y] += (0.5**i)*(gen.noise2d(freq*(x/n-0.5)-rnd, freq*(y/n-0.5)-rnd) / 2 + (0.5-water/100))
+
+    # reshaping and increasing height of altitude data
     alt *= height
     alt = alt.flatten()
 
@@ -461,7 +467,7 @@ def main():
 
     # Test 4: Random Data Generation
     create_temp_dir()
-    create_random_terrain(15, 4000, 50)
+    create_random_terrain(15, 8000, 50)
     create_image()
     plot_endpoints([0.0,0.0],[2.0,0.0])
     plot_points([[i/120.0,-(i/120.0 - 1)**2 + 1] for i in range(1,240)])
