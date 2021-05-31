@@ -109,12 +109,12 @@ class Page1(Page):
         # Enter End Point
         y2 = tk.Entry(bottomframe, width=20)
         y2.pack(side="right")
-        label = tk.Label(bottomframe, text="Enter long 2")
+        label = tk.Label(bottomframe, text="Enter lat 2")
         label.pack(side="right")
 
         x2 = tk.Entry(bottomframe, width=20)
         x2.pack(side="right")
-        label = tk.Label(bottomframe, text="Enter lat 2")
+        label = tk.Label(bottomframe, text="Enter long 2")
         label.pack(side="right")
 
         # Initial Image
@@ -326,12 +326,12 @@ class Page3(Page):
         # Enter End Point
         y2 = tk.Entry(bottomframe, width=20)
         y2.pack(side="right")
-        label = tk.Label(bottomframe, text="Enter long 2")
+        label = tk.Label(bottomframe, text="Enter lat 2")
         label.pack(side="right")
 
         x2 = tk.Entry(bottomframe, width=20)
         x2.pack(side="right")
-        label = tk.Label(bottomframe, text="Enter lat 2")
+        label = tk.Label(bottomframe, text="Enter long 2")
         label.pack(side="right")
 
         # Initial Image
