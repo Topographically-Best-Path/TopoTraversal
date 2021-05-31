@@ -83,7 +83,7 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
             nexty = coord[1] + delta[1]
 
             if 0 <= nextx < len(dat) and 0 <= nexty < len(dat[0]): # bounds check
-                if math.abs(npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) / scale <= threshold: # slope check
+                if abs(npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) / scale <= threshold: # slope check
 
                     newdist = 0
                     pythag_dist = (npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) ** 2 + scale ** 2
