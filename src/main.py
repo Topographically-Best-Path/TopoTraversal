@@ -15,19 +15,13 @@ class Page0(Page):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
 
-        img = tk.PhotoImage(file="Image1.png")
-        img = img.subsample(7)
-        label = tk.Label(self, image=img)
-        label.image = img
-        label.pack(side="top", fill="both", expand=True)
-
         T = tk.Text(self, height=10, width=75, font=("Helvetica", 16))
         T.pack()
 
         quote = """Our project will be a research project based on finding the optimal route between two points on a
 topographic elevation map. We will find the most reasonable route by taking into account factors
 such as traversal time, safety, distance, steepness, and physical features of the area including
-rivers and prebuilt paths. Our end goal is to make something like Google Maps’ fastest route
+rivers and lakes. Our end goal is to make something like Google Maps’ fastest route
 calculator, but for a place without as many man-built roads like a mountain or a valley,
 hence the use of a topographic map. We hope to gain knowledge of a variety of graph algorithms
 such as BFS, DFS, Dijikstra’s Algorithm and develop our own algorithm which could be helpful
@@ -39,206 +33,335 @@ class Page1(Page):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
 
-
-        def openInputField():
-            newWindow = tk.Toplevel(root)
-            newWindow.title("Endpoint Input")
-
-            plot = tk.Button(newWindow, text='Plot', command=lambda: sum2(int(x1.get()),int(y1.get()),int(x2.get())))
-            plot.pack(side="bottom", fill="both")
-
-            bottomframe = tk.Frame(newWindow)
-            bottomframe.pack( side ="bottom")
-
-            topframe = tk.Frame(newWindow)
-            topframe.pack( side = "top")
-
-            label = tk.Label(topframe, text="Enter x1")
-            label.pack(side="left")
-            x1 = tk.Entry(topframe, width=10)
-            x1.pack(side="left")
-
-            y1 = tk.Entry(topframe, width=10)
-            y1.pack(side="right")
-            label = tk.Label(topframe, text="Enter y1")
-            label.pack(side="right")
-
-            label = tk.Label(bottomframe, text="Enter x2")
-            label.pack(side="left")
-            x2 = tk.Entry(bottomframe, width=10)
-            x2.pack(side="left")
-
-            y2 = tk.Entry(bottomframe, width=10)
-            y2.pack(side="right")
-            label = tk.Label(bottomframe, text="Enter y2")
-            label.pack(side="right")
-
-        #This function runs getetopodata and create image then displays the image
-        def sum(lon, lat, size):
-            value = lon+lat+size
-            img1 = tk.PhotoImage(file="Image1.png")
+        # Image1 Creation
+        def image1(lon, lat, size):
+            if (lon < -180 or lon > 180): return
+            if (lat < -89 or lat > 89): return
+            if (size < 0.05 or size > 180): return
+            data.get_etopo_data(lon, lat, size)
+            data.create_image()
+            img1 = tk.PhotoImage(file=constants.TEMPDIR/"Image1.png")
             img1 = img1.subsample(7)
-            label.image = img1
-            label.configure(image=img1)
+            imglabel.image = img1
+            imglabel.configure(image=img1)
 
-        def sum2(lon, lat, size):
-            value = lon+lat+size
-            img2 = tk.PhotoImage(file="Image2.png")
+        # Image2 Creation
+        def image2(x1, y1, x2, y2):
+            bounds = data.get_bounds();
+            if (x1 < bounds[0] or x2 < bounds[0]): return
+            if (x1 > bounds[1] or x2 > bounds[1]): return
+            if (y1 < bounds[2] or y2 < bounds[2]): return
+            if (y1 > bounds[3] or y2 > bounds[3]): return
+            constants.LON1 = x1
+            constants.LAT1 = y1
+            constants.LON2 = x2
+            constants.LAT2 = y2
+            data.plot_endpoints([x1,y1],[x2,y2])
+            img2 = tk.PhotoImage(file=constants.TEMPDIR/"Image2.png")
             img2 = img2.subsample(7)
-            label.image = img2
-            label.configure(image=img2)
+            imglabel.image = img2
+            imglabel.configure(image=img2)
+
+        # Image3 Creation
+        def image3():
+            if (constants.LON1 == constants.LON2 and constants.LAT1 == constants.LAT2): return
+            path = algo.get_path(
+                (constants.LON1,constants.LAT1),
+                (constants.LON2,constants.LAT2),
+                data.get_scale()[0],
+                0.25
+            )
+            data.plot_points(path)
+            img3 = tk.PhotoImage(file=constants.TEMPDIR/"Image3.png")
+            img3 = img3.subsample(7)
+            imglabel.image = img3
+            imglabel.configure(image=img3)
+
+        # Creating Frames
+        bottomframe = tk.Frame(self)
+        bottomframe.pack(side = "bottom")
+        topframe = tk.Frame(self)
+        topframe.pack(side = "top")
+
+        # Best Path
+        showpath = tk.Button(
+            bottomframe,
+            text='Display Best Path',
+            command=lambda: image3()
+        )
+        showpath.pack(side="bottom", fill="both")
+
+        # Plot Endpoints
+        generate = tk.Button(bottomframe, text='Plot Endpoints', command=lambda: image2(float(x1.get()),float(y1.get()),float(x2.get()),float(y2.get())))
+        generate.pack(side="bottom", fill="both")
+
+        # Enter Start Point
+        label = tk.Label(bottomframe, text="Enter x1")
+        label.pack(side="left")
+        x1 = tk.Entry(bottomframe, width=20)
+        x1.pack(side="left")
+
+        label = tk.Label(bottomframe, text="Enter y1")
+        label.pack(side="left")
+        y1 = tk.Entry(bottomframe, width=20)
+        y1.pack(side="left")
+
+        # Enter End Point
+        y2 = tk.Entry(bottomframe, width=20)
+        y2.pack(side="right")
+        label = tk.Label(bottomframe, text="Enter y2")
+        label.pack(side="right")
+
+        x2 = tk.Entry(bottomframe, width=20)
+        x2.pack(side="right")
+        label = tk.Label(bottomframe, text="Enter x2")
+        label.pack(side="right")
+
+        # Initial Image
+        img = tk.PhotoImage(file="White.png")
+        img = img.subsample(2)
+        imglabel = tk.Label(topframe, image=img, height=600, width=109)
+        imglabel.image = img
+        imglabel.pack(side="top", fill="both", expand=False)
+
+        # Generate Image
+        generate = tk.Button(topframe, text='Generate Image', command=lambda: image1(float(x.get()),float(y.get()),float(r.get())))
+        generate.pack(side="bottom", fill="both")
 
         # Enter Radius
-        r = tk.Entry(self, width=40)
+        r = tk.Entry(topframe, width=109)
         r.pack(side="bottom", fill="both")
-        label = tk.Label(self, text="Enter Size (suggested 0.1 <= size <= 10)")
+        label = tk.Label(topframe, text="Enter Size (limit: 0.05 <= size <= 180, suggested: 0.1 <= size <= 10)")
         label.pack(side="bottom", fill="both")
 
         # Enter Y coordinate
-        y = tk.Entry(self, width=40)
+        y = tk.Entry(topframe, width=109)
         y.pack(side="bottom", fill="both")
-        label = tk.Label(self, text="Enter Latitude (suggested -85 <= lat <= 85)")
+        label = tk.Label(topframe, text="Enter Latitude (limit: -89 <= lat <= 89, suggested: -85 <= lat <= 85)")
         label.pack(side="bottom", fill="both")
 
         # Enter X coordinate
-        x = tk.Entry(self, width=40)
+        x = tk.Entry(topframe, width=109)
         x.pack(side="bottom", fill="both")
-        label = tk.Label(self, text="Enter Longitude (suggested -175 <= lon <= 175)")
+        label = tk.Label(topframe, text="Enter Longitude (limit: -180 <= lon <= 180, suggested: -175 <= lon <= 175)")
         label.pack(side="bottom", fill="both")
-
-        # Best Path
-        showpath = tk.Button(self, text='Display Best Path', command=lambda: sum(int(x.get()),int(y.get()),int(r.get())))
-        showpath.pack(side="bottom", fill="both")
-
-        # New Line
-        label = tk.Label(self, text="")
-        label.pack(side="bottom", fill="both")
-
-        # Plot Endpoints
-        generate = tk.Button(self, text='Plot Endpoints', command=openInputField)
-        generate.pack(side="bottom", fill="both")
-
-        # Generate Image
-        generate = tk.Button(self, text='Generate Image', command=lambda: sum(int(x.get()),int(y.get()),int(r.get())))
-        generate.pack(side="bottom", fill="both")
-
-        img = tk.PhotoImage(file="Image1.png")
-        img = img.subsample(7)
-        label = tk.Label(self, image=img)
-        label.image = img
-        label.pack(side="top", fill="both", expand=True)
 
 # File Input Page
 class Page2(Page):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
 
-        def file_opener():
-            # Get file path
+        # Image1 Creation
+        def image1():
             input = filedialog.askopenfilename(initialdir="/")
-
-            # Check for csv or nv
             if (input[-3:] == "csv"):
                 data.get_csvfile(input)
-            if (input[-2:] == "nv"):
+            elif (input[-2:] == "nv"):
                 data.get_ncfile(input)
-
-            # Create image
+            else: return
             data.create_image()
+            img1 = tk.PhotoImage(file=constants.TEMPDIR/"Image1.png")
+            img1 = img1.subsample(7)
+            imglabel.image = img1
+            imglabel.configure(image=img1)
 
-            # Display image
-            img2 = tk.PhotoImage(file="Image2.png")
+        # Image2 Creation
+        def image2(x1, y1, x2, y2):
+            bounds = data.get_bounds();
+            if (x1 < bounds[0] or x2 < bounds[0]): return
+            if (x1 > bounds[1] or x2 > bounds[1]): return
+            if (y1 < bounds[2] or y2 < bounds[2]): return
+            if (y1 > bounds[3] or y2 > bounds[3]): return
+            constants.LON1 = x1
+            constants.LAT1 = y1
+            constants.LON2 = x2
+            constants.LAT2 = y2
+            data.plot_endpoints([x1,y1],[x2,y2])
+            img2 = tk.PhotoImage(file=constants.TEMPDIR/"Image2.png")
             img2 = img2.subsample(7)
-            label.image = img2
-            label.configure(image=img2)
+            imglabel.image = img2
+            imglabel.configure(image=img2)
 
+        # Image3 Creation
+        def image3():
+            if (constants.LON1 == constants.LON2 and constants.LAT1 == constants.LAT2): return
+            path = algo.get_path(
+                (constants.LON1,constants.LAT1),
+                (constants.LON2,constants.LAT2),
+                data.get_scale()[0],
+                0.25
+            )
+            data.plot_points(path)
+            img3 = tk.PhotoImage(file=constants.TEMPDIR/"Image3.png")
+            img3 = img3.subsample(7)
+            imglabel.image = img3
+            imglabel.configure(image=img3)
 
-        select = tk.Button(self, text ='Select a .nc/.csv file', command = file_opener)
+        # Creating Frames
+        bottomframe = tk.Frame(self)
+        bottomframe.pack(side = "bottom")
+        topframe = tk.Frame(self)
+        topframe.pack(side = "top")
+
+        # Initial Image
+        img = tk.PhotoImage(file="White.png")
+        img = img.subsample(2)
+        imglabel = tk.Label(topframe, image=img, height=750, width=107)
+        imglabel.image = img
+        imglabel.pack(side="top", fill="both", expand=False)
+
+        # File Selecter
+        select = tk.Button(topframe, text='Select a .nc/.csv file', command=image1, width=107)
         select.pack(side="bottom", fill="both")
 
-        img = tk.PhotoImage(file="Image1.png")
-        img = img.subsample(7)
-        label = tk.Label(self, image=img)
-        label.image = img
-        label.pack(side="top", fill="both", expand=True)
+        # Best Path
+        showpath = tk.Button(
+            bottomframe,
+            text='Display Best Path',
+            command=lambda: image3()
+        )
+        showpath.pack(side="bottom", fill="both")
+
+        # Plot Endpoints
+        generate = tk.Button(bottomframe, text='Plot Endpoints', command=lambda: image2(float(x1.get()),float(y1.get()),float(x2.get()),float(y2.get())))
+        generate.pack(side="bottom", fill="both")
+
+        # Enter Start Point
+        label = tk.Label(bottomframe, text="Enter x1")
+        label.pack(side="left")
+        x1 = tk.Entry(bottomframe, width=20)
+        x1.pack(side="left")
+
+        label = tk.Label(bottomframe, text="Enter y1")
+        label.pack(side="left")
+        y1 = tk.Entry(bottomframe, width=20)
+        y1.pack(side="left")
+
+        # Enter End Point
+        y2 = tk.Entry(bottomframe, width=20)
+        y2.pack(side="right")
+        label = tk.Label(bottomframe, text="Enter y2")
+        label.pack(side="right")
+
+        x2 = tk.Entry(bottomframe, width=20)
+        x2.pack(side="right")
+        label = tk.Label(bottomframe, text="Enter x2")
+        label.pack(side="right")
 
 # Random Data Page
 class Page3(Page):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
 
-        def openInputField():
-            newWindow = tk.Toplevel(root)
-            newWindow.title("Endpoint Input")
+        # Image1 Creation
+        def image1(freq, height, water):
+            data.create_random_terrain(freq, height, water)
+            data.create_image()
+            img1 = tk.PhotoImage(file=constants.TEMPDIR/"Image1.png")
+            img1 = img1.subsample(7)
+            imglabel.image = img1
+            imglabel.configure(image=img1)
 
-            plot = tk.Button(newWindow, text='Plot', command=lambda: sum2(int(x1.get()),int(y1.get()),int(x2.get())))
-            plot.pack(side="bottom", fill="both")
+        # Image2 Creation
+        def image2(x1, y1, x2, y2):
+            bounds = data.get_bounds();
+            if (x1 < bounds[0] or x2 < bounds[0]): return
+            if (x1 > bounds[1] or x2 > bounds[1]): return
+            if (y1 < bounds[2] or y2 < bounds[2]): return
+            if (y1 > bounds[3] or y2 > bounds[3]): return
+            constants.LON1 = x1
+            constants.LAT1 = y1
+            constants.LON2 = x2
+            constants.LAT2 = y2
+            data.plot_endpoints([x1,y1],[x2,y2])
+            img2 = tk.PhotoImage(file=constants.TEMPDIR/"Image2.png")
+            img2 = img2.subsample(7)
+            imglabel.image = img2
+            imglabel.configure(image=img2)
 
-            bottomframe = tk.Frame(newWindow)
-            bottomframe.pack( side ="bottom")
+        # Image3 Creation
+        def image3():
+            if (constants.LON1 == constants.LON2 and constants.LAT1 == constants.LAT2): return
+            path = algo.get_path(
+                (constants.LON1,constants.LAT1),
+                (constants.LON2,constants.LAT2),
+                data.get_scale()[0],
+                0.25
+            )
+            data.plot_points(path)
+            img3 = tk.PhotoImage(file=constants.TEMPDIR/"Image3.png")
+            img3 = img3.subsample(7)
+            imglabel.image = img3
+            imglabel.configure(image=img3)
 
-            topframe = tk.Frame(newWindow)
-            topframe.pack( side = "top")
-
-            label = tk.Label(topframe, text="Enter x1")
-            label.pack(side="left")
-            x1 = tk.Entry(topframe, width=10)
-            x1.pack(side="left")
-
-            y1 = tk.Entry(topframe, width=10)
-            y1.pack(side="right")
-            label = tk.Label(topframe, text="Enter y1")
-            label.pack(side="right")
-
-            label = tk.Label(bottomframe, text="Enter x2")
-            label.pack(side="left")
-            x2 = tk.Entry(bottomframe, width=10)
-            x2.pack(side="left")
-
-            y2 = tk.Entry(bottomframe, width=10)
-            y2.pack(side="right")
-            label = tk.Label(bottomframe, text="Enter y2")
-            label.pack(side="right")
-
-        # Enter Water
-        w = tk.Entry(self, width=40)
-        w.pack(side="bottom", fill="both")
-        label = tk.Label(self, text="water, 0 <= water <= 100, percentage of the map that is water")
-        label.pack(side="bottom", fill="both")
-
-        # Enter Height
-        h = tk.Entry(self, width=40)
-        h.pack(side="bottom", fill="both")
-        label = tk.Label(self, text="height, 100 <= height <= 8000, controls max altitude difference")
-        label.pack(side="bottom", fill="both")
-
-        # Enter Frequency
-        f = tk.Entry(self, width=40)
-        f.pack(side="bottom", fill="both")
-        label = tk.Label(self, text="frequency, 1 <= frequency <= 25, controls how mountainous the data will be")
-        label.pack(side="bottom", fill="both")
-
-        # New Line
-        label = tk.Label(self, text="")
-        label.pack(side="bottom", fill="both")
+        # Creating Frames
+        bottomframe = tk.Frame(self)
+        bottomframe.pack(side = "bottom")
+        topframe = tk.Frame(self)
+        topframe.pack(side = "top")
 
         # Best Path
-        showpath = tk.Button(self, text='Display Best Path', command=lambda: sum(int(x.get()),int(y.get()),int(r.get())))
+        showpath = tk.Button(
+            bottomframe,
+            text='Display Best Path',
+            command=lambda: image3()
+        )
         showpath.pack(side="bottom", fill="both")
 
         # Plot Endpoints
-        generate = tk.Button(self, text='Plot Endpoints', command=openInputField)
+        generate = tk.Button(bottomframe, text='Plot Endpoints', command=lambda: image2(float(x1.get()),float(y1.get()),float(x2.get()),float(y2.get())))
         generate.pack(side="bottom", fill="both")
+
+        # Enter Start Point
+        label = tk.Label(bottomframe, text="Enter x1")
+        label.pack(side="left")
+        x1 = tk.Entry(bottomframe, width=20)
+        x1.pack(side="left")
+
+        label = tk.Label(bottomframe, text="Enter y1")
+        label.pack(side="left")
+        y1 = tk.Entry(bottomframe, width=20)
+        y1.pack(side="left")
+
+        # Enter End Point
+        y2 = tk.Entry(bottomframe, width=20)
+        y2.pack(side="right")
+        label = tk.Label(bottomframe, text="Enter y2")
+        label.pack(side="right")
+
+        x2 = tk.Entry(bottomframe, width=20)
+        x2.pack(side="right")
+        label = tk.Label(bottomframe, text="Enter x2")
+        label.pack(side="right")
+
+        # Initial Image
+        img = tk.PhotoImage(file="White.png")
+        img = img.subsample(2)
+        imglabel = tk.Label(topframe, image=img, height=600, width=109)
+        imglabel.image = img
+        imglabel.pack(side="top", fill="both", expand=False)
 
         # Generate Image
-        generate = tk.Button(self, text='Generate Image', command=lambda: sum(int(x.get()),int(y.get()),int(r.get())))
+        generate = tk.Button(topframe, text='Generate Image', command=lambda: image1(float(freq.get()),float(height.get()),float(water.get())))
         generate.pack(side="bottom", fill="both")
 
-        img = tk.PhotoImage(file="Image1.png")
-        img = img.subsample(7)
-        label = tk.Label(self, image=img)
-        label.image = img
-        label.pack(side="top", fill="both", expand=True)
+        # Enter Radius
+        water = tk.Entry(topframe, width=109)
+        water.pack(side="bottom", fill="both")
+        label = tk.Label(topframe, text="Enter Water (suggested: 0 <= water <= 100), percentage of map that is water")
+        label.pack(side="bottom", fill="both")
+
+        # Enter Y coordinate
+        height = tk.Entry(topframe, width=109)
+        height.pack(side="bottom", fill="both")
+        label = tk.Label(topframe, text="Enter Height (suggested: 100 <= height <= 8000), controls max altitude difference")
+        label.pack(side="bottom", fill="both")
+
+        # Enter X coordinate
+        freq = tk.Entry(topframe, width=109)
+        freq.pack(side="bottom", fill="both")
+        label = tk.Label(topframe, text="Enter Frequency (suggested: 1 <= freq <= 100), controls how mountainous data will be")
+        label.pack(side="bottom", fill="both")
 
 # Quit
 class Quit(Page):

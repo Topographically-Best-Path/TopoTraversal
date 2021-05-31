@@ -46,15 +46,15 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
     npdat = np.array(dat)
     start_ind = np.unravel_index(
         np.argmin(
-            (npdat[:,:,0] - start[0]) ** 2 + 
+            (npdat[:,:,0] - start[0]) ** 2 +
             (npdat[:,:,1] - start[1]) ** 2
-        ), 
+        ),
     npdat[:,:,0].shape)
     end_ind = np.unravel_index(
         np.argmin(
-            (npdat[:,:,0] - end[0]) ** 2 + 
+            (npdat[:,:,0] - end[0]) ** 2 +
             (npdat[:,:,1] - end[1])** 2
-        ), 
+        ),
     npdat[:,:,0].shape)
 
     # Set up the distance and previous traversal matrices for Djikstra
@@ -83,7 +83,7 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
             nexty = coord[1] + delta[1]
 
             if 0 <= nextx < len(dat) and 0 <= nexty < len(dat[0]): # bounds check
-                if (npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) / scale <= threshold: # slope check
+                if abs(npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) / scale <= threshold: # slope check
 
                     newdist = 0
                     # Add extra cost to moving over water
