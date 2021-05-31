@@ -96,12 +96,12 @@ class Page1(Page):
         generate.pack(side="bottom", fill="both")
 
         # Enter Start Point
-        label = tk.Label(bottomframe, text="Enter x1")
+        label = tk.Label(bottomframe, text="Enter lon1")
         label.pack(side="left")
         x1 = tk.Entry(bottomframe, width=20)
         x1.pack(side="left")
 
-        label = tk.Label(bottomframe, text="Enter y1")
+        label = tk.Label(bottomframe, text="Enter lat1")
         label.pack(side="left")
         y1 = tk.Entry(bottomframe, width=20)
         y1.pack(side="left")
@@ -109,18 +109,18 @@ class Page1(Page):
         # Enter End Point
         y2 = tk.Entry(bottomframe, width=20)
         y2.pack(side="right")
-        label = tk.Label(bottomframe, text="Enter y2")
+        label = tk.Label(bottomframe, text="Enter lat2")
         label.pack(side="right")
 
         x2 = tk.Entry(bottomframe, width=20)
         x2.pack(side="right")
-        label = tk.Label(bottomframe, text="Enter x2")
+        label = tk.Label(bottomframe, text="Enter lon2")
         label.pack(side="right")
 
         # Initial Image
         img = tk.PhotoImage(file="White.png")
         img = img.subsample(2)
-        imglabel = tk.Label(topframe, image=img, height=600, width=109)
+        imglabel = tk.Label(topframe, image=img, height=600, width=113)
         imglabel.image = img
         imglabel.pack(side="top", fill="both", expand=False)
 
@@ -129,19 +129,19 @@ class Page1(Page):
         generate.pack(side="bottom", fill="both")
 
         # Enter Radius
-        r = tk.Entry(topframe, width=109)
+        r = tk.Entry(topframe, width=113)
         r.pack(side="bottom", fill="both")
         label = tk.Label(topframe, text="Enter Size (limit: 0.05 <= size <= 180, suggested: 0.1 <= size <= 10)")
         label.pack(side="bottom", fill="both")
 
         # Enter Y coordinate
-        y = tk.Entry(topframe, width=109)
+        y = tk.Entry(topframe, width=113)
         y.pack(side="bottom", fill="both")
         label = tk.Label(topframe, text="Enter Latitude (limit: -89 <= lat <= 89, suggested: -85 <= lat <= 85)")
         label.pack(side="bottom", fill="both")
 
         # Enter X coordinate
-        x = tk.Entry(topframe, width=109)
+        x = tk.Entry(topframe, width=113)
         x.pack(side="bottom", fill="both")
         label = tk.Label(topframe, text="Enter Longitude (limit: -180 <= lon <= 180, suggested: -175 <= lon <= 175)")
         label.pack(side="bottom", fill="both")
@@ -158,7 +158,8 @@ class Page2(Page):
                 data.get_csvfile(input)
             elif (input[-2:] == "nv"):
                 data.get_ncfile(input)
-            else: return
+            else:
+                return
             data.create_image()
             img1 = tk.PhotoImage(file=constants.TEMPDIR/"Image1.png")
             img1 = img1.subsample(7)
@@ -206,12 +207,12 @@ class Page2(Page):
         # Initial Image
         img = tk.PhotoImage(file="White.png")
         img = img.subsample(2)
-        imglabel = tk.Label(topframe, image=img, height=750, width=107)
+        imglabel = tk.Label(topframe, image=img, height=750, width=111)
         imglabel.image = img
         imglabel.pack(side="top", fill="both", expand=False)
 
         # File Selecter
-        select = tk.Button(topframe, text='Select a .nc/.csv file', command=image1, width=107)
+        select = tk.Button(topframe, text='Select a .nc/.csv file', command=image1, width=111)
         select.pack(side="bottom", fill="both")
 
         # Best Path
@@ -227,12 +228,12 @@ class Page2(Page):
         generate.pack(side="bottom", fill="both")
 
         # Enter Start Point
-        label = tk.Label(bottomframe, text="Enter x1")
+        label = tk.Label(bottomframe, text="Enter lon1")
         label.pack(side="left")
         x1 = tk.Entry(bottomframe, width=20)
         x1.pack(side="left")
 
-        label = tk.Label(bottomframe, text="Enter y1")
+        label = tk.Label(bottomframe, text="Enter lat1")
         label.pack(side="left")
         y1 = tk.Entry(bottomframe, width=20)
         y1.pack(side="left")
@@ -240,12 +241,12 @@ class Page2(Page):
         # Enter End Point
         y2 = tk.Entry(bottomframe, width=20)
         y2.pack(side="right")
-        label = tk.Label(bottomframe, text="Enter y2")
+        label = tk.Label(bottomframe, text="Enter lat2")
         label.pack(side="right")
 
         x2 = tk.Entry(bottomframe, width=20)
         x2.pack(side="right")
-        label = tk.Label(bottomframe, text="Enter x2")
+        label = tk.Label(bottomframe, text="Enter lon2")
         label.pack(side="right")
 
 # Random Data Page
@@ -286,7 +287,7 @@ class Page3(Page):
                 (constants.LON1,constants.LAT1),
                 (constants.LON2,constants.LAT2),
                 data.get_scale()[0],
-                0.25
+                0.5
             )
             data.plot_points(path)
             img3 = tk.PhotoImage(file=constants.TEMPDIR/"Image3.png")
@@ -313,12 +314,12 @@ class Page3(Page):
         generate.pack(side="bottom", fill="both")
 
         # Enter Start Point
-        label = tk.Label(bottomframe, text="Enter x1")
+        label = tk.Label(bottomframe, text="Enter lon1")
         label.pack(side="left")
         x1 = tk.Entry(bottomframe, width=20)
         x1.pack(side="left")
 
-        label = tk.Label(bottomframe, text="Enter y1")
+        label = tk.Label(bottomframe, text="Enter lat1")
         label.pack(side="left")
         y1 = tk.Entry(bottomframe, width=20)
         y1.pack(side="left")
@@ -326,18 +327,18 @@ class Page3(Page):
         # Enter End Point
         y2 = tk.Entry(bottomframe, width=20)
         y2.pack(side="right")
-        label = tk.Label(bottomframe, text="Enter y2")
+        label = tk.Label(bottomframe, text="Enter lat2")
         label.pack(side="right")
 
         x2 = tk.Entry(bottomframe, width=20)
         x2.pack(side="right")
-        label = tk.Label(bottomframe, text="Enter x2")
+        label = tk.Label(bottomframe, text="Enter lon2")
         label.pack(side="right")
 
         # Initial Image
         img = tk.PhotoImage(file="White.png")
         img = img.subsample(2)
-        imglabel = tk.Label(topframe, image=img, height=600, width=109)
+        imglabel = tk.Label(topframe, image=img, height=600, width=113)
         imglabel.image = img
         imglabel.pack(side="top", fill="both", expand=False)
 
@@ -346,19 +347,19 @@ class Page3(Page):
         generate.pack(side="bottom", fill="both")
 
         # Enter Radius
-        water = tk.Entry(topframe, width=109)
+        water = tk.Entry(topframe, width=113)
         water.pack(side="bottom", fill="both")
         label = tk.Label(topframe, text="Enter Water (suggested: 0 <= water <= 100), percentage of map that is water")
         label.pack(side="bottom", fill="both")
 
         # Enter Y coordinate
-        height = tk.Entry(topframe, width=109)
+        height = tk.Entry(topframe, width=113)
         height.pack(side="bottom", fill="both")
         label = tk.Label(topframe, text="Enter Height (suggested: 100 <= height <= 8000), controls max altitude difference")
         label.pack(side="bottom", fill="both")
 
         # Enter X coordinate
-        freq = tk.Entry(topframe, width=109)
+        freq = tk.Entry(topframe, width=113)
         freq.pack(side="bottom", fill="both")
         label = tk.Label(topframe, text="Enter Frequency (suggested: 1 <= freq <= 100), controls how mountainous data will be")
         label.pack(side="bottom", fill="both")
