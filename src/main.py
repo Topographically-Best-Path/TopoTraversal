@@ -3,6 +3,9 @@ import algo
 import data
 import tkinter as tk
 from tkinter import filedialog
+from AppKit import NSScreen
+
+screen_width, screen_height = NSScreen.mainScreen().frame().size.width, NSScreen.mainScreen().frame().size.height
 
 class Page(tk.Frame):
     def __init__(self, *args, **kwargs):
@@ -407,5 +410,5 @@ if __name__ == "__main__":
     root = tk.Tk()
     main = MainView(root)
     main.pack(side="top", fill="both", expand=True)
-    root.wm_geometry("800x800")
+    root.geometry("{}x{}".format(int(screen_width*3//4), int(screen_height*7//8)))
     root.mainloop()
