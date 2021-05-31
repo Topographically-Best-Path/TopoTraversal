@@ -32,7 +32,7 @@ def read() -> List[List[Tuple[float, float, float]]]:
                 points_result[-1].append(dat)
     return points_result
 
-def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, threshold: float) -> List[Tuple[float, float]]:
+def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, water_weight:float, threshold: float) -> List[Tuple[float, float]]:
     """
     The heart of our project: the algorithm.
     Parameters:
@@ -65,7 +65,7 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
     # Start Djikstra
     q:list = []
     heapq.heappush(q, (0, start_ind))
-    dxy = [(-1, 0), (0, 1), (1, 0), (0, -1)] # Constants for checking neighbors
+    dxy = [(-1, 0), (0, 1), (1, 0), (0, -1), (-1, -1), (1, 1), (-1, 1), (1, -1)] # Constants for checking neighbors
     while len(q) > 0:
         # Pop the current minimum total distance from beginning
         try:
@@ -86,11 +86,11 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
                 if abs(npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) / scale <= threshold: # slope check
 
                     newdist = 0
-                    # Add extra cost to moving over water
+                    pythag_dist = (npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) ** 2 + scale ** 2
                     if npdat[nextx][nexty][2] <= 0:
-                        newdist = curr_dist + 100
+                        newdist = curr_dist + water_weight * pythag_dist # Add extra cost to moving over water
                     else:
-                        newdist = curr_dist + 1
+                        newdist = curr_dist + pythag_dist
 
                     if newdist < dists[nextx][nexty]: # dists check
                         dists[nextx][nexty] = newdist
