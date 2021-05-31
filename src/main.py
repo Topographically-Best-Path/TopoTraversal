@@ -227,12 +227,12 @@ class Page2(Page):
         generate.pack(side="bottom", fill="both")
 
         # Enter Start Point
-        label = tk.Label(bottomframe, text="Enter x1")
+        label = tk.Label(bottomframe, text="Enter long 1")
         label.pack(side="left")
         x1 = tk.Entry(bottomframe, width=20)
         x1.pack(side="left")
 
-        label = tk.Label(bottomframe, text="Enter y1")
+        label = tk.Label(bottomframe, text="Enter lat 1")
         label.pack(side="left")
         y1 = tk.Entry(bottomframe, width=20)
         y1.pack(side="left")
@@ -240,12 +240,12 @@ class Page2(Page):
         # Enter End Point
         y2 = tk.Entry(bottomframe, width=20)
         y2.pack(side="right")
-        label = tk.Label(bottomframe, text="Enter y2")
+        label = tk.Label(bottomframe, text="Enter lat 2")
         label.pack(side="right")
 
         x2 = tk.Entry(bottomframe, width=20)
         x2.pack(side="right")
-        label = tk.Label(bottomframe, text="Enter x2")
+        label = tk.Label(bottomframe, text="Enter long 2")
         label.pack(side="right")
 
 # Random Data Page
@@ -313,12 +313,12 @@ class Page3(Page):
         generate.pack(side="bottom", fill="both")
 
         # Enter Start Point
-        label = tk.Label(bottomframe, text="Enter x1")
+        label = tk.Label(bottomframe, text="Enter long 1")
         label.pack(side="left")
         x1 = tk.Entry(bottomframe, width=20)
         x1.pack(side="left")
 
-        label = tk.Label(bottomframe, text="Enter y1")
+        label = tk.Label(bottomframe, text="Enter lat 1")
         label.pack(side="left")
         y1 = tk.Entry(bottomframe, width=20)
         y1.pack(side="left")
@@ -326,12 +326,12 @@ class Page3(Page):
         # Enter End Point
         y2 = tk.Entry(bottomframe, width=20)
         y2.pack(side="right")
-        label = tk.Label(bottomframe, text="Enter y2")
+        label = tk.Label(bottomframe, text="Enter long 2")
         label.pack(side="right")
 
         x2 = tk.Entry(bottomframe, width=20)
         x2.pack(side="right")
-        label = tk.Label(bottomframe, text="Enter x2")
+        label = tk.Label(bottomframe, text="Enter lat 2")
         label.pack(side="right")
 
         # Initial Image
