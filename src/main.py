@@ -125,6 +125,9 @@ class Page1(Page):
                 w,
                 s
             )
+            if (len(path) == 0):
+                warn("Could Not Find Path With Given Constraints",True)
+                return
             data.plot_points(path)
             img3 = tk.PhotoImage(file=constants.TEMPDIR/"Image3.png")
             img3 = img3.subsample(7)
@@ -227,7 +230,7 @@ class Page2(Page):
             input = filedialog.askopenfilename(initialdir="/")
             if (input[-3:] == "csv"):
                 data.get_csvfile(input)
-            elif (input[-2:] == "nv"):
+            elif (input[-2:] == "nc"):
                 data.get_ncfile(input)
             else:
                 warn("Invalid File", True)
@@ -300,6 +303,9 @@ class Page2(Page):
                 w,
                 s
             )
+            if (len(path) == 0):
+                warn("Could Not Find Path With Given Constraints",True)
+                return
             data.plot_points(path)
             img3 = tk.PhotoImage(file=constants.TEMPDIR/"Image3.png")
             img3 = img3.subsample(7)
@@ -462,6 +468,9 @@ class Page3(Page):
                 w,
                 s
             )
+            if (len(path) == 0):
+                warn("Could Not Find Path With Given Constraints",True)
+                return
             data.plot_points(path)
             img3 = tk.PhotoImage(file=constants.TEMPDIR/"Image3.png")
             img3 = img3.subsample(7)
