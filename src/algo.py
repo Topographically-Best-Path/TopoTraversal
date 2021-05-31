@@ -32,7 +32,7 @@ def read() -> List[List[Tuple[float, float, float]]]:
                 points_result[-1].append(dat)
     return points_result
 
-def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, water_weight:float, threshold: float) -> List[Tuple[float, float]]:
+def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:List[float], water_weight:float, threshold: float) -> List[Tuple[float, float]]:
     """
     The heart of our project: the algorithm.
     Parameters:
@@ -42,6 +42,7 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, wa
     """
 
     dat:List[List[Tuple[float, float, float]]] = read()
+    h_scale, v_scale, d_scale = scale
     # Find the indices of the start and end
     npdat = np.array(dat)
     start_ind = np.unravel_index(
@@ -68,10 +69,7 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, wa
     dxy = [(-1, 0), (0, 1), (1, 0), (0, -1), (-1, -1), (1, 1), (-1, 1), (1, -1)] # Constants for checking neighbors
     while len(q) > 0:
         # Pop the current minimum total distance from beginning
-        try:
-            curr_dist, coord = heapq.heappop(q)
-        except:
-            print(q)
+        curr_dist, coord = heapq.heappop(q)
 
         # Break upon encountering the end; if its in the heap, it must have its dists/prev updated
         if coord == end:
@@ -79,14 +77,21 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, wa
 
         # Check all neighbors
         for delta in dxy:
+            # nextx and nexty make no sense; nextx = nextlat, nexty = nextlong, 0 is lat diff 1 is long diff
             nextx = coord[0] + delta[0]
             nexty = coord[1] + delta[1]
 
+            selected_scale = v_scale 
+            if delta[0] == 0: # no difference in latitude = must be difference in latitude
+                selected_scale = h_scale
+            elif delta[0] != 0 and delta[1] != 0:
+                selected_scale = d_scale  
+
             if 0 <= nextx < len(dat) and 0 <= nexty < len(dat[0]): # bounds check
-                if abs(npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) / scale <= threshold: # slope check
+                if abs(npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) / selected_scale <= threshold: # slope check
 
                     newdist = 0
-                    pythag_dist = (npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) ** 2 + scale ** 2
+                    pythag_dist = (npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) ** 2 + selected_scale ** 2
                     if npdat[nextx][nexty][2] <= 0:
                         newdist = curr_dist + water_weight * pythag_dist # Add extra cost to moving over water
                     else:

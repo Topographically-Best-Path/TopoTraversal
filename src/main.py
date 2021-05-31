@@ -121,7 +121,7 @@ class Page1(Page):
             path = algo.get_path(
                 (constants.LON1,constants.LAT1),
                 (constants.LON2,constants.LAT2),
-                data.get_scale()[0],
+                data.get_scale(),
                 w,
                 s
             )
@@ -299,7 +299,7 @@ class Page2(Page):
             path = algo.get_path(
                 (constants.LON1,constants.LAT1),
                 (constants.LON2,constants.LAT2),
-                data.get_scale()[0],
+                data.get_scale(),
                 w,
                 s
             )
@@ -464,7 +464,7 @@ class Page3(Page):
             path = algo.get_path(
                 (constants.LON1,constants.LAT1),
                 (constants.LON2,constants.LAT2),
-                data.get_scale()[0],
+                data.get_scale(),
                 w,
                 s
             )
