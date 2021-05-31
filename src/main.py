@@ -169,7 +169,7 @@ class Page1(Page):
         # Initial Image
         img = tk.PhotoImage(file="White.png")
         img = img.subsample(2)
-        imglabel = tk.Label(topframe, image=img, height=600, width=109)
+        imglabel = tk.Label(topframe, image=img, height=600, width=113)
         imglabel.image = img
         imglabel.pack(side="top", fill="both", expand=False)
 
@@ -190,19 +190,19 @@ class Page1(Page):
         generate.pack(side="bottom", fill="both")
 
         # Enter Radius
-        r = tk.Entry(topframe, width=109)
+        r = tk.Entry(topframe, width=113)
         r.pack(side="bottom", fill="both")
         label = tk.Label(topframe, text="Enter Size (limit: 0.05 <= size <= 180, suggested: 0.1 <= size <= 10)")
         label.pack(side="bottom", fill="both")
 
         # Enter Y coordinate
-        y = tk.Entry(topframe, width=109)
+        y = tk.Entry(topframe, width=113)
         y.pack(side="bottom", fill="both")
         label = tk.Label(topframe, text="Enter Latitude (limit: -89 <= lat <= 89, suggested: -85 <= lat <= 85)")
         label.pack(side="bottom", fill="both")
 
         # Enter X coordinate
-        x = tk.Entry(topframe, width=109)
+        x = tk.Entry(topframe, width=113)
         x.pack(side="bottom", fill="both")
         label = tk.Label(topframe, text="Enter Longitude (limit: -180 <= lon <= 180, suggested: -175 <= lon <= 175)")
         label.pack(side="bottom", fill="both")
@@ -300,7 +300,7 @@ class Page2(Page):
         # Initial Image
         img = tk.PhotoImage(file="White.png")
         img = img.subsample(2)
-        imglabel = tk.Label(topframe, image=img, height=750, width=107)
+        imglabel = tk.Label(topframe, image=img, height=750, width=111)
         imglabel.image = img
         imglabel.pack(side="top", fill="both", expand=False)
 
@@ -317,7 +317,7 @@ class Page2(Page):
         label.pack(side="bottom", fill="both")
 
         # File Selecter
-        select = tk.Button(topframe, text='Select a .nc/.csv file', command=image1, width=107)
+        select = tk.Button(topframe, text='Select a .nc/.csv file', command=image1, width=111)
         select.pack(side="bottom", fill="both")
 
         # Best Path
@@ -486,7 +486,7 @@ class Page3(Page):
         # Initial Image
         img = tk.PhotoImage(file="White.png")
         img = img.subsample(2)
-        imglabel = tk.Label(topframe, image=img, height=600, width=109)
+        imglabel = tk.Label(topframe, image=img, height=600, width=113)
         imglabel.image = img
         imglabel.pack(side="top", fill="both", expand=False)
 
@@ -507,19 +507,19 @@ class Page3(Page):
         generate.pack(side="bottom", fill="both")
 
         # Enter Radius
-        water = tk.Entry(topframe, width=109)
+        water = tk.Entry(topframe, width=113)
         water.pack(side="bottom", fill="both")
         label = tk.Label(topframe, text="Enter Water (suggested: 0 <= water <= 100), percentage of map that is water")
         label.pack(side="bottom", fill="both")
 
         # Enter Y coordinate
-        height = tk.Entry(topframe, width=109)
+        height = tk.Entry(topframe, width=113)
         height.pack(side="bottom", fill="both")
         label = tk.Label(topframe, text="Enter Height (suggested: 100 <= height <= 8000), controls max altitude difference")
         label.pack(side="bottom", fill="both")
 
         # Enter X coordinate
-        freq = tk.Entry(topframe, width=109)
+        freq = tk.Entry(topframe, width=113)
         freq.pack(side="bottom", fill="both")
         label = tk.Label(topframe, text="Enter Frequency (suggested: 1 <= freq <= 100), controls how mountainous data will be")
         label.pack(side="bottom", fill="both")
