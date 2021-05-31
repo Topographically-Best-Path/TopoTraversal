@@ -197,7 +197,7 @@ class Page1(Page):
         x1.pack(side="bottom")
         label = tk.Label(rightframe, text="Enter long 1 (within bounds of image)")
         label.pack(side="bottom")
-        
+
         # Initial Image
         img = tk.PhotoImage(file="White.png")
         img = img.subsample(2)
@@ -332,7 +332,7 @@ class Page2(Page):
             imglabel.image = img3
             imglabel.configure(image=img3)
             warn("", False)
-        
+
         # Creating Frames
         rightframe = tk.Frame(self)
         rightframe.pack(side = "right")
