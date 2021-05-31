@@ -32,7 +32,7 @@ def read() -> List[List[Tuple[float, float, float]]]:
                 points_result[-1].append(dat)
     return points_result
 
-def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, threshold: float) -> List[Tuple[float, float]]:
+def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, water_weight:float, threshold: float) -> List[Tuple[float, float]]:
     """
     The heart of our project: the algorithm.
     Parameters:
@@ -88,7 +88,7 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
                     newdist = 0
                     pythag_dist = (npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) ** 2 + scale ** 2
                     if npdat[nextx][nexty][2] <= 0:
-                        newdist = curr_dist + 100 * pythag_dist # Add extra cost to moving over water
+                        newdist = curr_dist + water_weight * pythag_dist # Add extra cost to moving over water
                     else:
                         newdist = curr_dist + pythag_dist
 
