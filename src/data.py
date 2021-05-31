@@ -98,7 +98,7 @@ def plot_points(points):
         x=x,
         y=y,
         style='c0.05c',
-        color='white',
+        color='black',
         pen='black',
     )
 

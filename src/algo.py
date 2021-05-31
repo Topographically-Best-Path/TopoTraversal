@@ -46,15 +46,15 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:float, th
     npdat = np.array(dat)
     start_ind = np.unravel_index(
         np.argmin(
-            (npdat[:,:,0] - start[0]) ** 2 + 
+            (npdat[:,:,0] - start[0]) ** 2 +
             (npdat[:,:,1] - start[1]) ** 2
-        ), 
+        ),
     npdat[:,:,0].shape)
     end_ind = np.unravel_index(
         np.argmin(
-            (npdat[:,:,0] - end[0]) ** 2 + 
+            (npdat[:,:,0] - end[0]) ** 2 +
             (npdat[:,:,1] - end[1])** 2
-        ), 
+        ),
     npdat[:,:,0].shape)
 
     # Set up the distance and previous traversal matrices for Djikstra
