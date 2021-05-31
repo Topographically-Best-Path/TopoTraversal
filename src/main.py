@@ -16,8 +16,6 @@ class Page0(Page):
         Page.__init__(self, *args, **kwargs)
 
         T = tk.Text(self, height=10, width=75, font=("Helvetica", 16))
-        T.pack()
-
         quote = """Our project will be a research project based on finding the optimal route between two points on a
 topographic elevation map. We will find the most reasonable route by taking into account factors
 such as traversal time, safety, distance, steepness, and physical features of the area including
@@ -27,6 +25,8 @@ hence the use of a topographic map. We hope to gain knowledge of a variety of gr
 such as BFS, DFS, Dijikstra’s Algorithm and develop our own algorithm which could be helpful
 with planning and creating paths in the wilderness."""
         T.insert(tk.END, quote)
+        T.configure(state='disabled')
+        T.pack()
 
 # World Data Page
 class Page1(Page):
