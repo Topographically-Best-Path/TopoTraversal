@@ -83,6 +83,11 @@ class Page1(Page):
         topframe = tk.Frame(self)
         topframe.pack(side = "top")
 
+        warning = tk.Label(bottomframe, text="")
+        warning.pack(side="bottom")
+        def warn(message:str):
+            warning.text = message
+
         # Best Path
         showpath = tk.Button(
             bottomframe,
@@ -123,6 +128,18 @@ class Page1(Page):
         imglabel = tk.Label(topframe, image=img, height=600, width=109)
         imglabel.image = img
         imglabel.pack(side="top", fill="both", expand=False)
+
+        # Water weight
+        w = tk.Entry(topframe, width=109)
+        w.pack(side="bottom", fill="both")
+        label = tk.Label(topframe, text="Water cost multiplier")
+        label.pack(side="bottom", fill="both")
+
+        # Slope threshold
+        s = tk.Entry(topframe, width=109)
+        s.pack(side="bottom", fill="both")
+        label = tk.Label(topframe, text="Slope limit")
+        label.pack(side="bottom", fill="both")
 
         # Generate Image
         generate = tk.Button(topframe, text='Generate Image', command=lambda: image1(float(x.get()),float(y.get()),float(r.get())))
