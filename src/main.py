@@ -35,47 +35,91 @@ class Page1(Page):
 
         # Image1 Creation
         def image1(lon, lat, size):
-            if (lon < -180 or lon > 180): return
-            if (lat < -89 or lat > 89): return
-            if (size < 0.05 or size > 180): return
+            if not lon:
+                warn("Missing longitude", True)
+                return
+            if not lat:
+                warn("Missing latitude", True)
+                return
+            if not size:
+                warn("Missing size", True)
+                return
+            lon = float(lon)
+            lat = float(lat)
+            size = float(size)
+            if (lon < -180 or lon > 180):
+                warn("Longitude out of range", True) 
+                return
+            if (lat < -89 or lat > 89): 
+                warn("Latitude out of range", True) 
+                return
+            if (size < 0.05 or size > 180): 
+                warn("Size out of range", True) 
+                return
+            warn("Loading data...", False)
             data.get_etopo_data(lon, lat, size)
             data.create_image()
             img1 = tk.PhotoImage(file=constants.TEMPDIR/"Image1.png")
             img1 = img1.subsample(7)
             imglabel.image = img1
             imglabel.configure(image=img1)
+            warn("", False)
 
         # Image2 Creation
         def image2(x1, y1, x2, y2):
-            bounds = data.get_bounds();
-            if (x1 < bounds[0] or x2 < bounds[0]): return
-            if (x1 > bounds[1] or x2 > bounds[1]): return
-            if (y1 < bounds[2] or y2 < bounds[2]): return
-            if (y1 > bounds[3] or y2 > bounds[3]): return
+            bounds = data.get_bounds()
+            if not x1:
+                warn("Missing long 1", True)
+                return
+            if not y1:
+                warn("Missing lat 1", True)
+                return
+            if not x2:
+                warn("Missing long 2", True)
+                return
+            if not y2:
+                warn("Missing lat 2", True)
+                return
+            if x1 < bounds[0] or x2 < bounds[0] or x1 > bounds[1] or x2 > bounds[1] or y1 < bounds[2] or y2 < bounds[2] or y1 > bounds[3] or y2 > bounds[3]:
+                warn("Out of bounds", True)
+                return
             constants.LON1 = x1
             constants.LAT1 = y1
             constants.LON2 = x2
             constants.LAT2 = y2
+            warn("Plotting endpoints...", False)
             data.plot_endpoints([x1,y1],[x2,y2])
             img2 = tk.PhotoImage(file=constants.TEMPDIR/"Image2.png")
             img2 = img2.subsample(7)
             imglabel.image = img2
             imglabel.configure(image=img2)
+            warn("", False)
 
         # Image3 Creation
-        def image3():
+        def image3(w, s):
+            if not s:
+                warn("No slope limit", True)
+                return
+            if not w:
+                warn("No water multiplier", True)
+                return
+            w = float(w)
+            s = float(s)
             if (constants.LON1 == constants.LON2 and constants.LAT1 == constants.LAT2): return
             path = algo.get_path(
                 (constants.LON1,constants.LAT1),
                 (constants.LON2,constants.LAT2),
                 data.get_scale()[0],
-                0.25
+                w,
+                s
             )
+            warn("Loading path...", False)
             data.plot_points(path)
             img3 = tk.PhotoImage(file=constants.TEMPDIR/"Image3.png")
             img3 = img3.subsample(7)
             imglabel.image = img3
             imglabel.configure(image=img3)
+            warn("", False)
 
         # Creating Frames
         bottomframe = tk.Frame(self)
@@ -83,21 +127,21 @@ class Page1(Page):
         topframe = tk.Frame(self)
         topframe.pack(side = "top")
 
-        warning = tk.Label(bottomframe, text="")
-        warning.pack(side="bottom")
-        def warn(message:str):
-            warning.text = message
+        self.warning = tk.Label(bottomframe, text="",fg="red")
+        self.warning.pack(side="bottom")
+        def warn(message:str,red:bool):
+            self.warning.config(text=message,fg="red" if red else "black")
 
         # Best Path
         showpath = tk.Button(
             bottomframe,
             text='Display Best Path',
-            command=lambda: image3()
+            command=lambda: image3(w.get(), s.get())
         )
         showpath.pack(side="bottom", fill="both")
 
         # Plot Endpoints
-        generate = tk.Button(bottomframe, text='Plot Endpoints', command=lambda: image2(float(x1.get()),float(y1.get()),float(x2.get()),float(y2.get())))
+        generate = tk.Button(bottomframe, text='Plot Endpoints', command=lambda: image2(x1.get(),y1.get(),x2.get(),y2.get()))
         generate.pack(side="bottom", fill="both")
 
         # Enter Start Point
@@ -142,7 +186,7 @@ class Page1(Page):
         label.pack(side="bottom", fill="both")
 
         # Generate Image
-        generate = tk.Button(topframe, text='Generate Image', command=lambda: image1(float(x.get()),float(y.get()),float(r.get())))
+        generate = tk.Button(topframe, text='Generate Image', command=lambda: image1(x.get(),y.get(),r.get()))
         generate.pack(side="bottom", fill="both")
 
         # Enter Radius
@@ -175,50 +219,83 @@ class Page2(Page):
                 data.get_csvfile(input)
             elif (input[-2:] == "nv"):
                 data.get_ncfile(input)
-            else: return
+            else:
+                warn("Invalid file", True) 
+                return
+            warn("Loading file...", False)
             data.create_image()
             img1 = tk.PhotoImage(file=constants.TEMPDIR/"Image1.png")
             img1 = img1.subsample(7)
             imglabel.image = img1
             imglabel.configure(image=img1)
+            warn("", False)
 
         # Image2 Creation
         def image2(x1, y1, x2, y2):
-            bounds = data.get_bounds();
-            if (x1 < bounds[0] or x2 < bounds[0]): return
-            if (x1 > bounds[1] or x2 > bounds[1]): return
-            if (y1 < bounds[2] or y2 < bounds[2]): return
-            if (y1 > bounds[3] or y2 > bounds[3]): return
+            bounds = data.get_bounds()
+            if not x1:
+                warn("Missing long 1", True)
+                return
+            if not y1:
+                warn("Missing lat 1", True)
+                return
+            if not x2:
+                warn("Missing long 2", True)
+                return
+            if not y2:
+                warn("Missing lat 2", True)
+                return
+            if x1 < bounds[0] or x2 < bounds[0] or x1 > bounds[1] or x2 > bounds[1] or y1 < bounds[2] or y2 < bounds[2] or y1 > bounds[3] or y2 > bounds[3]:
+                warn("Out of bounds", True)
+                return
             constants.LON1 = x1
             constants.LAT1 = y1
             constants.LON2 = x2
             constants.LAT2 = y2
+            warn("Plotting endpoints...", False)
             data.plot_endpoints([x1,y1],[x2,y2])
             img2 = tk.PhotoImage(file=constants.TEMPDIR/"Image2.png")
             img2 = img2.subsample(7)
             imglabel.image = img2
             imglabel.configure(image=img2)
+            warn("", False)
 
         # Image3 Creation
-        def image3():
+        def image3(w, s):
+            if not s:
+                warn("No slope limit", True)
+                return
+            if not w:
+                warn("No water multiplier", True)
+                return
+            s = float(s)
+            w = float(w)
             if (constants.LON1 == constants.LON2 and constants.LAT1 == constants.LAT2): return
             path = algo.get_path(
                 (constants.LON1,constants.LAT1),
                 (constants.LON2,constants.LAT2),
                 data.get_scale()[0],
-                0.25
+                w,
+                s
             )
+            warn("Calculating path...", False)
             data.plot_points(path)
             img3 = tk.PhotoImage(file=constants.TEMPDIR/"Image3.png")
             img3 = img3.subsample(7)
             imglabel.image = img3
             imglabel.configure(image=img3)
-
+            warn("", False)
+        
         # Creating Frames
         bottomframe = tk.Frame(self)
         bottomframe.pack(side = "bottom")
         topframe = tk.Frame(self)
         topframe.pack(side = "top")
+
+        self.warning = tk.Label(bottomframe, text="",fg="red")
+        self.warning.pack(side="bottom")
+        def warn(message:str,red:bool):
+            self.warning.config(text=message,fg="red" if red else "black")
 
         # Initial Image
         img = tk.PhotoImage(file="White.png")
@@ -226,6 +303,18 @@ class Page2(Page):
         imglabel = tk.Label(topframe, image=img, height=750, width=107)
         imglabel.image = img
         imglabel.pack(side="top", fill="both", expand=False)
+
+        # Water weight
+        w = tk.Entry(topframe, width=109)
+        w.pack(side="bottom", fill="both")
+        label = tk.Label(topframe, text="Water cost multiplier")
+        label.pack(side="bottom", fill="both")
+
+        # Slope threshold
+        s = tk.Entry(topframe, width=109)
+        s.pack(side="bottom", fill="both")
+        label = tk.Label(topframe, text="Slope limit")
+        label.pack(side="bottom", fill="both")
 
         # File Selecter
         select = tk.Button(topframe, text='Select a .nc/.csv file', command=image1, width=107)
@@ -235,12 +324,12 @@ class Page2(Page):
         showpath = tk.Button(
             bottomframe,
             text='Display Best Path',
-            command=lambda: image3()
+            command=lambda: image3(w.get(), s.get())
         )
         showpath.pack(side="bottom", fill="both")
 
         # Plot Endpoints
-        generate = tk.Button(bottomframe, text='Plot Endpoints', command=lambda: image2(float(x1.get()),float(y1.get()),float(x2.get()),float(y2.get())))
+        generate = tk.Button(bottomframe, text='Plot Endpoints', command=lambda: image2(x1.get(),y1.get(),x2.get(),y2.get()))
         generate.pack(side="bottom", fill="both")
 
         # Enter Start Point
@@ -272,44 +361,82 @@ class Page3(Page):
 
         # Image1 Creation
         def image1(freq, height, water):
+            if not freq:
+                warn("Missing frequency", True)
+                return
+            if not height:
+                warn("Missing height", True)
+                return
+            if not water:
+                warn("Missing water", True)
+                return
+            freq = float(freq)
+            height = float(height)
+            water = float(water)
+            warn("Creating terrain...", False)
             data.create_random_terrain(freq, height, water)
             data.create_image()
             img1 = tk.PhotoImage(file=constants.TEMPDIR/"Image1.png")
             img1 = img1.subsample(7)
             imglabel.image = img1
             imglabel.configure(image=img1)
+            warn("",False)
 
         # Image2 Creation
         def image2(x1, y1, x2, y2):
-            bounds = data.get_bounds();
-            if (x1 < bounds[0] or x2 < bounds[0]): return
-            if (x1 > bounds[1] or x2 > bounds[1]): return
-            if (y1 < bounds[2] or y2 < bounds[2]): return
-            if (y1 > bounds[3] or y2 > bounds[3]): return
+            bounds = data.get_bounds()
+            if not x1:
+                warn("Missing long 1", True)
+                return
+            if not y1:
+                warn("Missing lat 1", True)
+                return
+            if not x2:
+                warn("Missing long 2", True)
+                return
+            if not y2:
+                warn("Missing lat 2", True)
+                return
+            if x1 < bounds[0] or x2 < bounds[0] or x1 > bounds[1] or x2 > bounds[1] or y1 < bounds[2] or y2 < bounds[2] or y1 > bounds[3] or y2 > bounds[3]:
+                warn("Out of bounds", True)
+                return
             constants.LON1 = x1
             constants.LAT1 = y1
             constants.LON2 = x2
             constants.LAT2 = y2
+            warn("Plotting endpoints...", False)
             data.plot_endpoints([x1,y1],[x2,y2])
             img2 = tk.PhotoImage(file=constants.TEMPDIR/"Image2.png")
             img2 = img2.subsample(7)
             imglabel.image = img2
             imglabel.configure(image=img2)
+            warn("", False)
 
         # Image3 Creation
-        def image3():
+        def image3(w, s):
+            if not s:
+                warn("No slope limit", True)
+                return
+            if not w:
+                warn("No water multiplier", True)
+                return
+            s = float(s)
+            w = float(w)
             if (constants.LON1 == constants.LON2 and constants.LAT1 == constants.LAT2): return
             path = algo.get_path(
                 (constants.LON1,constants.LAT1),
                 (constants.LON2,constants.LAT2),
                 data.get_scale()[0],
-                0.25
+                w,
+                s
             )
+            warn("Calculating path...", False)
             data.plot_points(path)
             img3 = tk.PhotoImage(file=constants.TEMPDIR/"Image3.png")
             img3 = img3.subsample(7)
             imglabel.image = img3
             imglabel.configure(image=img3)
+            warn("", False)
 
         # Creating Frames
         bottomframe = tk.Frame(self)
@@ -317,16 +444,21 @@ class Page3(Page):
         topframe = tk.Frame(self)
         topframe.pack(side = "top")
 
+        self.warning = tk.Label(bottomframe, text="",fg="red")
+        self.warning.pack(side="bottom")
+        def warn(message:str,red:bool):
+            self.warning.config(text=message,fg="red" if red else "black")
+
         # Best Path
         showpath = tk.Button(
             bottomframe,
             text='Display Best Path',
-            command=lambda: image3()
+            command=lambda: image3(w.get(), s.get())
         )
         showpath.pack(side="bottom", fill="both")
 
         # Plot Endpoints
-        generate = tk.Button(bottomframe, text='Plot Endpoints', command=lambda: image2(float(x1.get()),float(y1.get()),float(x2.get()),float(y2.get())))
+        generate = tk.Button(bottomframe, text='Plot Endpoints', command=lambda: image2(x1.get(),y1.get(),x2.get(),y2.get()))
         generate.pack(side="bottom", fill="both")
 
         # Enter Start Point
@@ -358,8 +490,20 @@ class Page3(Page):
         imglabel.image = img
         imglabel.pack(side="top", fill="both", expand=False)
 
+        # Water weight
+        w = tk.Entry(topframe, width=109)
+        w.pack(side="bottom", fill="both")
+        label = tk.Label(topframe, text="Water cost multiplier")
+        label.pack(side="bottom", fill="both")
+
+        # Slope threshold
+        s = tk.Entry(topframe, width=109)
+        s.pack(side="bottom", fill="both")
+        label = tk.Label(topframe, text="Slope limit")
+        label.pack(side="bottom", fill="both")
+
         # Generate Image
-        generate = tk.Button(topframe, text='Generate Image', command=lambda: image1(float(freq.get()),float(height.get()),float(water.get())))
+        generate = tk.Button(topframe, text='Generate Image', command=lambda: image1(freq.get(),height.get(),water.get()))
         generate.pack(side="bottom", fill="both")
 
         # Enter Radius
