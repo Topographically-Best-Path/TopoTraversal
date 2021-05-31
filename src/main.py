@@ -63,7 +63,6 @@ class Page1(Page):
             img1 = img1.subsample(7)
             imglabel.image = img1
             imglabel.configure(image=img1)
-            warn("", False)
 
         # Image2 Creation
         def image2(x1, y1, x2, y2):
@@ -101,13 +100,11 @@ class Page1(Page):
             constants.LAT1 = y1
             constants.LON2 = x2
             constants.LAT2 = y2
-            warn("Plotting endpoints...", False)
             data.plot_endpoints([x1,y1],[x2,y2])
             img2 = tk.PhotoImage(file=constants.TEMPDIR/"Image2.png")
             img2 = img2.subsample(7)
             imglabel.image = img2
             imglabel.configure(image=img2)
-            warn("", False)
 
         # Image3 Creation
         def image3(w, s):
@@ -128,13 +125,11 @@ class Page1(Page):
                 w,
                 s
             )
-            warn("Loading path...", False)
             data.plot_points(path)
             img3 = tk.PhotoImage(file=constants.TEMPDIR/"Image3.png")
             img3 = img3.subsample(7)
             imglabel.image = img3
             imglabel.configure(image=img3)
-            warn("", False)
 
         # Creating Frames
         leftframe = tk.Frame(self)
@@ -143,11 +138,6 @@ class Page1(Page):
         rightframe.pack(side = "right")
 
         self.warning = tk.Label(rightframe, text="",fg="red",font=("Arial", 25))
-        self.warning.pack(side="bottom")
-        def warn(message:str,red:bool):
-            self.warning.config(text=message,fg="red" if red else "black")
-
-        self.warning = tk.Label(bottomframe, text="",fg="red")
         self.warning.pack(side="bottom")
         def warn(message:str,red:bool):
             self.warning.config(text=message,fg="red" if red else "black")
@@ -205,18 +195,6 @@ class Page1(Page):
         imglabel.image = img
         imglabel.pack(side="right", fill="both", expand=True)
 
-        # Water weight
-        w = tk.Entry(topframe, width=109)
-        w.pack(side="bottom", fill="both")
-        label = tk.Label(topframe, text="Water cost multiplier")
-        label.pack(side="bottom", fill="both")
-
-        # Slope threshold
-        s = tk.Entry(topframe, width=109)
-        s.pack(side="bottom", fill="both")
-        label = tk.Label(topframe, text="Slope limit")
-        label.pack(side="bottom", fill="both")
-
         # Generate Image
         generate = tk.Button(rightframe, text='Generate Image', command=lambda: image1(x.get(),y.get(),r.get()))
         generate.pack(side="bottom", fill="both")
@@ -260,7 +238,6 @@ class Page2(Page):
             img1 = img1.subsample(7)
             imglabel.image = img1
             imglabel.configure(image=img1)
-            warn("", False)
 
         # Image2 Creation
         def image2(x1, y1, x2, y2):
@@ -298,13 +275,11 @@ class Page2(Page):
             constants.LAT1 = y1
             constants.LON2 = x2
             constants.LAT2 = y2
-            warn("Plotting endpoints...", False)
             data.plot_endpoints([x1,y1],[x2,y2])
             img2 = tk.PhotoImage(file=constants.TEMPDIR/"Image2.png")
             img2 = img2.subsample(7)
             imglabel.image = img2
             imglabel.configure(image=img2)
-            warn("", False)
 
         # Image3 Creation
         def image3(w, s):
@@ -325,13 +300,11 @@ class Page2(Page):
                 w,
                 s
             )
-            warn("Calculating path...", False)
             data.plot_points(path)
             img3 = tk.PhotoImage(file=constants.TEMPDIR/"Image3.png")
             img3 = img3.subsample(7)
             imglabel.image = img3
             imglabel.configure(image=img3)
-            warn("", False)
 
         # Creating Frames
         rightframe = tk.Frame(self)
@@ -427,7 +400,6 @@ class Page3(Page):
             img1 = img1.subsample(7)
             imglabel.image = img1
             imglabel.configure(image=img1)
-            warn("",False)
 
         # Image2 Creation
         def image2(x1, y1, x2, y2):
@@ -465,13 +437,11 @@ class Page3(Page):
             constants.LAT1 = y1
             constants.LON2 = x2
             constants.LAT2 = y2
-            warn("Plotting endpoints...", False)
             data.plot_endpoints([x1,y1],[x2,y2])
             img2 = tk.PhotoImage(file=constants.TEMPDIR/"Image2.png")
             img2 = img2.subsample(7)
             imglabel.image = img2
             imglabel.configure(image=img2)
-            warn("", False)
 
         # Image3 Creation
         def image3(w, s):
@@ -492,13 +462,11 @@ class Page3(Page):
                 w,
                 s
             )
-            warn("Calculating path...", False)
             data.plot_points(path)
             img3 = tk.PhotoImage(file=constants.TEMPDIR/"Image3.png")
             img3 = img3.subsample(7)
             imglabel.image = img3
             imglabel.configure(image=img3)
-            warn("", False)
 
         # Creating Frames
         rightframe = tk.Frame(self)
@@ -507,11 +475,6 @@ class Page3(Page):
         leftframe.pack(side = "left")
 
         self.warning = tk.Label(rightframe, text="",fg="red",font=("Arial", 25))
-        self.warning.pack(side="bottom")
-        def warn(message:str,red:bool):
-            self.warning.config(text=message,fg="red" if red else "black")
-
-        self.warning = tk.Label(bottomframe, text="",fg="red")
         self.warning.pack(side="bottom")
         def warn(message:str,red:bool):
             self.warning.config(text=message,fg="red" if red else "black")
@@ -568,18 +531,6 @@ class Page3(Page):
         imglabel = tk.Label(leftframe, image=img, height=1000, width=1000)
         imglabel.image = img
         imglabel.pack(side="right", fill="both", expand=True)
-
-        # Water weight
-        w = tk.Entry(topframe, width=109)
-        w.pack(side="bottom", fill="both")
-        label = tk.Label(topframe, text="Water cost multiplier")
-        label.pack(side="bottom", fill="both")
-
-        # Slope threshold
-        s = tk.Entry(topframe, width=109)
-        s.pack(side="bottom", fill="both")
-        label = tk.Label(topframe, text="Slope limit")
-        label.pack(side="bottom", fill="both")
 
         # Generate Image
         generate = tk.Button(rightframe, text='Generate Image', command=lambda: image1(freq.get(),height.get(),water.get()))
