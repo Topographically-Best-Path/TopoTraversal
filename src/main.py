@@ -3,6 +3,7 @@ import algo
 import data
 import tkinter as tk
 from tkinter import filedialog
+from tkmacosx import Button
 
 class Page(tk.Frame):
     def __init__(self, *args, **kwargs):
@@ -15,18 +16,25 @@ class Page0(Page):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
 
-        T = tk.Text(self, height=10, width=75, font=("Helvetica", 16))
-        quote = """Our project will be a research project based on finding the optimal route between two points on a
-topographic elevation map. We will find the most reasonable route by taking into account factors
+        leftframe = tk.Frame(self)
+        leftframe.pack(side = "top")
+
+        T = tk.Text(self, height=8, width=75, font=("Helvetica", 20), bg="#F0F0F0")
+        quote = """Our project is a research project based on finding the optimal route between two points on a
+topographic elevation map. We found the most reasonable route by taking into account factors
 such as traversal time, safety, distance, steepness, and physical features of the area including
-rivers and lakes. Our end goal is to make something like Google Maps’ fastest route
-calculator, but for a place without as many man-built roads like a mountain or a valley,
-hence the use of a topographic map. We hope to gain knowledge of a variety of graph algorithms
-such as BFS, DFS, Dijikstra’s Algorithm and develop our own algorithm which could be helpful
-with planning and creating paths in the wilderness."""
+rivers and lakes. For the data generation aspect of this project, we used Python's PyGMT library.
+We took into account a variety of graph algorithms such as BFS, DFS, Dijikstra’s Algorithm to develop our own algorithm"""
+
         T.insert(tk.END, quote)
         T.configure(state='disabled')
-        T.pack()
+        T.pack(expand=True)
+
+        img = tk.PhotoImage(file="aboutimage.png")
+        img = img.subsample(1)
+        imglabel = tk.Label(self, image=img, height=2000, width=2000)
+        imglabel.image = img
+        imglabel.pack(side="top", fill="both", expand=True)
 
 # World Data Page
 class Page1(Page):
@@ -572,6 +580,7 @@ class Quit(Page):
 class MainView(tk.Frame):
     def __init__(self, *args, **kwargs):
         tk.Frame.__init__(self, *args, **kwargs)
+
         p0 = Page0(self)
         p1 = Page1(self)
         p2 = Page2(self)
@@ -589,11 +598,11 @@ class MainView(tk.Frame):
         p3.place(in_=container, x=0, y=0, relwidth=1, relheight=1)
         p4.place(in_=container, x=0, y=0, relwidth=1, relheight=1)
 
-        b0 = tk.Button(buttonframe, text="About", command=p0.lift)
-        b1 = tk.Button(buttonframe, text="World Data", command=p1.lift)
-        b2 = tk.Button(buttonframe, text="File Input", command=p2.lift)
-        b3 = tk.Button(buttonframe, text="Random Data Page", command=p3.lift)
-        b4 = tk.Button(buttonframe, text='Quit', command=root.destroy)
+        b0 = tk.Button(buttonframe, text="About", padx=8, pady=8, command=p0.lift)
+        b1 = tk.Button(buttonframe, text="World Data", padx=8, pady=8, command=p1.lift)
+        b2 = tk.Button(buttonframe, text="File Input", padx=8, pady=8, command=p2.lift)
+        b3 = tk.Button(buttonframe, text="Random Data Page", padx=8, pady=8, command=p3.lift)
+        b4 = Button(buttonframe, text='Quit', bg = '#ffbdb6', activebackground = '#ffbdb6', command=root.destroy)
 
         b0.pack(side="left")
         b1.pack(side="left")
@@ -607,5 +616,6 @@ if __name__ == "__main__":
     root = tk.Tk()
     main = MainView(root)
     main.pack(side="top", fill="both", expand=True)
+    root.title("Topographic Transversal")
     root.wm_geometry("960x960")
     root.mainloop()
