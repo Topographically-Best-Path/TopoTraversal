@@ -81,11 +81,11 @@ def get_path(start:Tuple[float, float], end:Tuple[float, float], scale:List[floa
             nextx = coord[0] + delta[0]
             nexty = coord[1] + delta[1]
 
-            selected_scale = v_scale 
+            selected_scale = v_scale
             if delta[0] == 0: # no difference in latitude = must be difference in latitude
                 selected_scale = h_scale
             elif delta[0] != 0 and delta[1] != 0:
-                selected_scale = d_scale  
+                selected_scale = d_scale
 
             if 0 <= nextx < len(dat) and 0 <= nexty < len(dat[0]): # bounds check
                 if abs(npdat[nextx][nexty][2] - npdat[coord[0]][coord[1]][2]) / selected_scale <= threshold: # slope check

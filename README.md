@@ -9,5 +9,5 @@
 - conda config --prepend channels conda-forge
 - conda create --name pygmt python=3.9 pip numpy pandas xarray netcdf4 packaging gmt pygmt           
 - conda activate pygmt
-- pip install opensimplex
+- pip install opensimplex tkmacosx
 - python main.py

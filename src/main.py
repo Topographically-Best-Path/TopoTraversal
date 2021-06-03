@@ -17,24 +17,63 @@ class Page0(Page):
         Page.__init__(self, *args, **kwargs)
 
         leftframe = tk.Frame(self)
-        leftframe.pack(side = "top")
+        leftframe.pack(side = "left")
+        rightframe = tk.Frame(self)
+        rightframe.pack(side = "right")
 
-        T = tk.Text(self, height=8, width=75, font=("Helvetica", 20), bg="#F0F0F0")
-        quote = """Our project is a research project based on finding the optimal route between two points on a
-topographic elevation map. We found the most reasonable route by taking into account factors
-such as traversal time, safety, distance, steepness, and physical features of the area including
-rivers and lakes. For the data generation aspect of this project, we used Python's PyGMT library.
-We took into account a variety of graph algorithms such as BFS, DFS, Dijikstra’s Algorithm to develop our own algorithm"""
-
+        T = tk.Text(leftframe, height=4, width=40, font=("Helvetica", 20), bg="#F0F0F0")
+        quote = """
+This program is a research project based on finding
+the optimal route between two points given elevation
+data. An example of such a route is shown below.
+"""
         T.insert(tk.END, quote)
         T.configure(state='disabled')
-        T.pack(expand=True)
+        T.pack(side='top')
 
-        img = tk.PhotoImage(file="aboutimage.png")
+        img = tk.PhotoImage(file="AboutImage.png")
         img = img.subsample(1)
-        imglabel = tk.Label(self, image=img, height=2000, width=2000)
+        imglabel = tk.Label(leftframe, image=img, height=800, width=600)
         imglabel.image = img
-        imglabel.pack(side="top", fill="both", expand=True)
+        imglabel.pack(side="top", expand=True)
+
+        T2 = tk.Text(rightframe, height=37, width=75, font=("Helvetica", 20), bg="#F0F0F0")
+        quote2 = """
+
+
+
+Usage Guide:
+
+    World Data:
+        1) Enter Longitude, Latitude, Size, and press the Generate Image button
+        2) Enter Long 1, Lat 1, Long 2, Lat 2, and press the Plot Endpoints button
+        3) Enter Slope Limit, Water Cost Multiplier, and press the Display Best Path button
+        Notes:
+            Data is generated from the pygmt library, for more information check out their
+            website: https://www.pygmt.org/latest/overview.html
+
+    File Input:
+        1) Choose a .nc or .csv file and press the Generate Image Button
+        2) Enter Long 1, Lat 1, Long 2, Lat 2, and press the Plot Endpoints button
+        3) Enter Slope Limit, Water Cost Multiplier, and press the Display Best Path button
+        Notes:
+            The .nc file should have three variables: 'x', 'y', and 'z', with shapes
+            (n,), (m,), and (n,m) respectively. The .csv file should have n rows and
+            3 columns with the columns being 'x', 'y', and 'z' in that order. 'x' data
+            should change before 'y' data does.
+
+    Random Data:
+        1) Enter Frequency, Height, Water, and press the Generate Image button
+        2) Enter Long 1, Lat 1, Long 2, Lat 2, and press the Plot Endpoints button
+        3) Enter Slope Limit, Water Cost Multiplier, and press the Display Best Path button
+        Notes:
+            This uses Perlin noise generation to create random terrain, for more information
+            check out the following websites: https://en.wikipedia.org/wiki/Perlin_noise
+            https://www.redblobgames.com/maps/terrain-from-noise/
+        """
+        T2.insert(tk.END, quote2)
+        T2.configure(state='disabled')
+        T2.pack(expand=True)
 
 # World Data Page
 class Page1(Page):
